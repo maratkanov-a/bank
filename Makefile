@@ -97,6 +97,11 @@ REL_PATH_FROM_PAYMENTS_TO_ROOT=$(shell echo $(PAYMENTS_CLIENT_PATH) | perl -F/ -
 .PHONY: generate
 generate: .generate .generate-validation
 
+.PHONY: build
+build:
+	$(info #Building...)
+	go build -o $(LOCAL_BIN) ./cmd/bank
+
 .PHONY: lint
 lint: install-lint
 	$(info #Running lint...)

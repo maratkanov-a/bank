@@ -92,6 +92,10 @@ func (r *PaymentsRepo) Create(ctx context.Context, from, to int64, amount int64)
 			return err
 		}
 
+		if accountTo.Currency != accountFrom.Currency {
+			return repository.ErrIncompatibleCurrency
+		}
+
 		// create to
 		id, err = createPayment(ctx, tx, &repository.Payment{
 			Amount:      amount,

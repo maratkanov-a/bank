@@ -48,7 +48,6 @@ func (db *DB) Setup(t *testing.T, objects ...interface{}) {
 	ctx := context.Background()
 
 	db.Lock()
-	// TODO: consider using truncation before the setup everywhere
 	db.truncate(ctx)
 
 	err := db.WithTx(ctx, nil, func(ctx context.Context, tx database.Tx) error {

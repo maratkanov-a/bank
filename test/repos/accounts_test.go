@@ -8,7 +8,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAccountsGet(t *testing.T) {
+func TestAccountsList(t *testing.T) {
+	//	TODO
+}
+
+func TestListByAvailability(t *testing.T) {
+	//	TODO
+}
+
+func TestAccountsGetByID(t *testing.T) {
 	var accountsRepo = postgresql.NewAccounts(testDB.DB)
 
 	t.Run("empty repository, expected error", func(t *testing.T) {
@@ -20,4 +28,16 @@ func TestAccountsGet(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "not found")
 	})
+}
+
+func TestAccountsCreate(t *testing.T) {
+	//	TODO
+}
+
+func TestAccountsUpdate(t *testing.T) {
+	//	TODO
+}
+
+func TestAccountsDelete(t *testing.T) {
+	//	TODO
 }

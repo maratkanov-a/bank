@@ -8,7 +8,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPaymentsGet(t *testing.T) {
+func TestPaymentsList(t *testing.T) {
+	//	TODO
+}
+
+func TestPaymentsGetByID(t *testing.T) {
 	var paymentsRepo = postgresql.NewPayments(testDB.DB)
 
 	t.Run("empty repository, expected error", func(t *testing.T) {
@@ -20,4 +24,8 @@ func TestPaymentsGet(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "not found")
 	})
+}
+
+func TestPaymentsCreate(t *testing.T) {
+	//	TODO
 }

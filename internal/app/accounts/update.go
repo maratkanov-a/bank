@@ -24,8 +24,6 @@ func (i *Implementation) Update(ctx context.Context, req *desc.UpdateRequest) (*
 		return nil, err
 	}
 
-	// TODO: select for update
-
 	bal, err := balance.ConvertToCents(req.Balance)
 	if err != nil {
 		return nil, err
