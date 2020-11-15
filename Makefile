@@ -1,3 +1,4 @@
+INTERNAL_PKG_PATH="./internal/pkg"
 PROTO_FILES_PATH="./api"
 LOCAL_BIN:=$(CURDIR)/bin
 MINIMOCK_BIN:=$(LOCAL_BIN)/minimock
@@ -6,6 +7,7 @@ GOLANGCI_BIN:=$(LOCAL_BIN)/golangci-lint
 GOLANGCI_TAG:=1.32.2
 
 GENVALIDATE_TAG:=0.3.0
+GOOSE_TAG:=2.6.0
 
 CLIENTS_PATH=pkg
 ACCOUNTS_CLIENT_PATH=$(CLIENTS_PATH)/accounts
@@ -55,7 +57,13 @@ ifeq ($(wildcard $(GOLANGCI_BIN)),)
 GOLANGCI_BIN:=$(LOCAL_BIN)/golangci-lint
 endif
 
-#	TODO
+.PHONY: install-goose
+install-goose:
+	$(info #Downloading goose v$(GOOSE_TAG))
+	tmp=$$(mktemp -d) && cd $$tmp && pwd && go mod init temp && go get -d github.com/pressly/goose@v$(GOOSE_TAG) && \
+		go build -o $(LOCAL_BIN)/goose github.com/pressly/goose && \
+		rm -rf $$tmp
+
 .PHONY: generate-mock
 generate-mock: install-minimock
 	find . -name '*_mock.go' -delete
@@ -101,3 +109,32 @@ test:
 .PHONY: test-integration
 test-integration:
 	go test ./test -count=1 -run=$(run)
+
+POSTGRES_SETUP_TEST := user=test password=test dbname=bank_test host=localhost port=6432 sslmode=disable
+
+# test db
+.PHONY: test-migrations-up
+test-migrations-up:
+	$(LOCAL_BIN)/goose -dir "$(INTERNAL_PKG_PATH)/db/migrations" postgres "${POSTGRES_SETUP_TEST}" up
+
+.PHONY: test-migrations-down
+test-migrations-down:
+	$(LOCAL_BIN)/goose -dir "$(INTERNAL_PKG_PATH)/db/migrations" postgres "${POSTGRES_SETUP_TEST}" down
+
+# docker-compose aliases
+.PHONY: compose-up
+compose-up:
+	docker-compose -p bank -f ./deployments/docker-compose.yml up -d
+
+.PHONY: compose-rs
+compose-rs:
+	make compose-rm
+	make compose-up
+
+.PHONY: compose-rm
+compose-rm:
+	docker-compose -p bank -f ./deployments/docker-compose.yml rm -fvs
+
+.PHONY: compose-down
+compose-down:
+	docker-compose -p bank -f ./deployments/docker-compose.yml stop
