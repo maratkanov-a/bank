@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package payments;
+
+import "google/api/annotations.proto";
+import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
+
+
+// list
+message ListRequest{}
+message ListResponse{}
+// end of list
+
+
+// get
+message GetRequest{
+    int64 ID = 1 [(validate.rules).int64.gt = 0];
+}
+message GetResponse{}
+// end of get
+
+
+// create
+message CreateRequest{}
+message CreateResponse{}
+// end of create
+
+service Payments {
+    rpc List(ListRequest) returns (ListResponse) {
+        option (google.api.http) = {
+            get: "/v1/payments"
+        };
+    }
+
+    rpc Get(GetRequest) returns (GetResponse) {
+        option (google.api.http) = {
+            get: "/v1/payments/{ID}"
+        };
+    }
+
+    rpc Create(CreateRequest) returns (CreateResponse) {
+        option (google.api.http) = {
+            post: "/v1/payments"
+            body: "*"
+        };
+    }
+}

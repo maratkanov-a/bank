@@ -1,0 +1,10 @@
+version: "3"
+services:
+  test-postgres:
+    image: postgres:10.11
+    environment:
+      POSTGRES_DB: bank_test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "6432:5432"
