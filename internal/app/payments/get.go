@@ -16,7 +16,7 @@ func (i *Implementation) Get(ctx context.Context, req *desc.GetRequest) (*desc.G
 		return nil, err
 	}
 
-	payment, err := i.pr.GetByIDMock(ctx, req.ID)
+	payment, err := i.pr.GetByID(ctx, req.ID)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err

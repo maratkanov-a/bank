@@ -30,7 +30,7 @@ func TestImplementation_Get(t *testing.T) {
 		expected = &accounts.Account{
 			ID:       ID,
 			Name:     "someName",
-			Balance:  10011,
+			Balance:  100.11,
 			Currency: accounts.CurrencyType_RU,
 		}
 

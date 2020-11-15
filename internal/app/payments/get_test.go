@@ -73,7 +73,7 @@ func TestImplementation_Get(t *testing.T) {
 
 	t.Run("repo err; expect err", func(t *testing.T) {
 		i := newTestImplementation(t)
-		i.prMock.GetByIDMockMock.Expect(ctx, ID).Return(nil, someError)
+		i.prMock.GetByIDMock.Expect(ctx, ID).Return(nil, someError)
 
 		resp, err := i.Get(ctx, validReq)
 		require.Error(t, err)
@@ -84,7 +84,7 @@ func TestImplementation_Get(t *testing.T) {
 
 	t.Run("convert err; expect error", func(t *testing.T) {
 		i := newTestImplementation(t)
-		i.prMock.GetByIDMockMock.Return(invalidEAccountRepo, nil)
+		i.prMock.GetByIDMock.Return(invalidEAccountRepo, nil)
 
 		resp, err := i.Get(ctx, validReq)
 		require.Error(t, err)
@@ -95,7 +95,7 @@ func TestImplementation_Get(t *testing.T) {
 
 	t.Run("expect ok", func(t *testing.T) {
 		i := newTestImplementation(t)
-		i.prMock.GetByIDMockMock.Return(accountRepo, nil)
+		i.prMock.GetByIDMock.Return(accountRepo, nil)
 
 		resp, err := i.Get(ctx, validReq)
 		require.NoError(t, err)

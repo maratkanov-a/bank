@@ -22,11 +22,11 @@ type PaymentRepositoryMock struct {
 	beforeCreateCounter uint64
 	CreateMock          mPaymentRepositoryMockCreate
 
-	funcGetByIDMock          func(ctx context.Context, id int64) (pp1 *mm_repository.Payment, err error)
-	inspectFuncGetByIDMock   func(ctx context.Context, id int64)
-	afterGetByIDMockCounter  uint64
-	beforeGetByIDMockCounter uint64
-	GetByIDMockMock          mPaymentRepositoryMockGetByIDMock
+	funcGetByID          func(ctx context.Context, id int64) (pp1 *mm_repository.Payment, err error)
+	inspectFuncGetByID   func(ctx context.Context, id int64)
+	afterGetByIDCounter  uint64
+	beforeGetByIDCounter uint64
+	GetByIDMock          mPaymentRepositoryMockGetByID
 
 	funcList          func(ctx context.Context) (ppa1 []*mm_repository.Payment, err error)
 	inspectFuncList   func(ctx context.Context)
@@ -45,8 +45,8 @@ func NewPaymentRepositoryMock(t minimock.Tester) *PaymentRepositoryMock {
 	m.CreateMock = mPaymentRepositoryMockCreate{mock: m}
 	m.CreateMock.callArgs = []*PaymentRepositoryMockCreateParams{}
 
-	m.GetByIDMockMock = mPaymentRepositoryMockGetByIDMock{mock: m}
-	m.GetByIDMockMock.callArgs = []*PaymentRepositoryMockGetByIDMockParams{}
+	m.GetByIDMock = mPaymentRepositoryMockGetByID{mock: m}
+	m.GetByIDMock.callArgs = []*PaymentRepositoryMockGetByIDParams{}
 
 	m.ListMock = mPaymentRepositoryMockList{mock: m}
 	m.ListMock.callArgs = []*PaymentRepositoryMockListParams{}
@@ -273,220 +273,220 @@ func (m *PaymentRepositoryMock) MinimockCreateInspect() {
 	}
 }
 
-type mPaymentRepositoryMockGetByIDMock struct {
+type mPaymentRepositoryMockGetByID struct {
 	mock               *PaymentRepositoryMock
-	defaultExpectation *PaymentRepositoryMockGetByIDMockExpectation
-	expectations       []*PaymentRepositoryMockGetByIDMockExpectation
+	defaultExpectation *PaymentRepositoryMockGetByIDExpectation
+	expectations       []*PaymentRepositoryMockGetByIDExpectation
 
-	callArgs []*PaymentRepositoryMockGetByIDMockParams
+	callArgs []*PaymentRepositoryMockGetByIDParams
 	mutex    sync.RWMutex
 }
 
-// PaymentRepositoryMockGetByIDMockExpectation specifies expectation struct of the PaymentRepository.GetByIDMock
-type PaymentRepositoryMockGetByIDMockExpectation struct {
+// PaymentRepositoryMockGetByIDExpectation specifies expectation struct of the PaymentRepository.GetByID
+type PaymentRepositoryMockGetByIDExpectation struct {
 	mock    *PaymentRepositoryMock
-	params  *PaymentRepositoryMockGetByIDMockParams
-	results *PaymentRepositoryMockGetByIDMockResults
+	params  *PaymentRepositoryMockGetByIDParams
+	results *PaymentRepositoryMockGetByIDResults
 	Counter uint64
 }
 
-// PaymentRepositoryMockGetByIDMockParams contains parameters of the PaymentRepository.GetByIDMock
-type PaymentRepositoryMockGetByIDMockParams struct {
+// PaymentRepositoryMockGetByIDParams contains parameters of the PaymentRepository.GetByID
+type PaymentRepositoryMockGetByIDParams struct {
 	ctx context.Context
 	id  int64
 }
 
-// PaymentRepositoryMockGetByIDMockResults contains results of the PaymentRepository.GetByIDMock
-type PaymentRepositoryMockGetByIDMockResults struct {
+// PaymentRepositoryMockGetByIDResults contains results of the PaymentRepository.GetByID
+type PaymentRepositoryMockGetByIDResults struct {
 	pp1 *mm_repository.Payment
 	err error
 }
 
-// Expect sets up expected params for PaymentRepository.GetByIDMock
-func (mmGetByIDMock *mPaymentRepositoryMockGetByIDMock) Expect(ctx context.Context, id int64) *mPaymentRepositoryMockGetByIDMock {
-	if mmGetByIDMock.mock.funcGetByIDMock != nil {
-		mmGetByIDMock.mock.t.Fatalf("PaymentRepositoryMock.GetByIDMock mock is already set by Set")
+// Expect sets up expected params for PaymentRepository.GetByID
+func (mmGetByID *mPaymentRepositoryMockGetByID) Expect(ctx context.Context, id int64) *mPaymentRepositoryMockGetByID {
+	if mmGetByID.mock.funcGetByID != nil {
+		mmGetByID.mock.t.Fatalf("PaymentRepositoryMock.GetByID mock is already set by Set")
 	}
 
-	if mmGetByIDMock.defaultExpectation == nil {
-		mmGetByIDMock.defaultExpectation = &PaymentRepositoryMockGetByIDMockExpectation{}
+	if mmGetByID.defaultExpectation == nil {
+		mmGetByID.defaultExpectation = &PaymentRepositoryMockGetByIDExpectation{}
 	}
 
-	mmGetByIDMock.defaultExpectation.params = &PaymentRepositoryMockGetByIDMockParams{ctx, id}
-	for _, e := range mmGetByIDMock.expectations {
-		if minimock.Equal(e.params, mmGetByIDMock.defaultExpectation.params) {
-			mmGetByIDMock.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmGetByIDMock.defaultExpectation.params)
+	mmGetByID.defaultExpectation.params = &PaymentRepositoryMockGetByIDParams{ctx, id}
+	for _, e := range mmGetByID.expectations {
+		if minimock.Equal(e.params, mmGetByID.defaultExpectation.params) {
+			mmGetByID.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmGetByID.defaultExpectation.params)
 		}
 	}
 
-	return mmGetByIDMock
+	return mmGetByID
 }
 
-// Inspect accepts an inspector function that has same arguments as the PaymentRepository.GetByIDMock
-func (mmGetByIDMock *mPaymentRepositoryMockGetByIDMock) Inspect(f func(ctx context.Context, id int64)) *mPaymentRepositoryMockGetByIDMock {
-	if mmGetByIDMock.mock.inspectFuncGetByIDMock != nil {
-		mmGetByIDMock.mock.t.Fatalf("Inspect function is already set for PaymentRepositoryMock.GetByIDMock")
+// Inspect accepts an inspector function that has same arguments as the PaymentRepository.GetByID
+func (mmGetByID *mPaymentRepositoryMockGetByID) Inspect(f func(ctx context.Context, id int64)) *mPaymentRepositoryMockGetByID {
+	if mmGetByID.mock.inspectFuncGetByID != nil {
+		mmGetByID.mock.t.Fatalf("Inspect function is already set for PaymentRepositoryMock.GetByID")
 	}
 
-	mmGetByIDMock.mock.inspectFuncGetByIDMock = f
+	mmGetByID.mock.inspectFuncGetByID = f
 
-	return mmGetByIDMock
+	return mmGetByID
 }
 
-// Return sets up results that will be returned by PaymentRepository.GetByIDMock
-func (mmGetByIDMock *mPaymentRepositoryMockGetByIDMock) Return(pp1 *mm_repository.Payment, err error) *PaymentRepositoryMock {
-	if mmGetByIDMock.mock.funcGetByIDMock != nil {
-		mmGetByIDMock.mock.t.Fatalf("PaymentRepositoryMock.GetByIDMock mock is already set by Set")
+// Return sets up results that will be returned by PaymentRepository.GetByID
+func (mmGetByID *mPaymentRepositoryMockGetByID) Return(pp1 *mm_repository.Payment, err error) *PaymentRepositoryMock {
+	if mmGetByID.mock.funcGetByID != nil {
+		mmGetByID.mock.t.Fatalf("PaymentRepositoryMock.GetByID mock is already set by Set")
 	}
 
-	if mmGetByIDMock.defaultExpectation == nil {
-		mmGetByIDMock.defaultExpectation = &PaymentRepositoryMockGetByIDMockExpectation{mock: mmGetByIDMock.mock}
+	if mmGetByID.defaultExpectation == nil {
+		mmGetByID.defaultExpectation = &PaymentRepositoryMockGetByIDExpectation{mock: mmGetByID.mock}
 	}
-	mmGetByIDMock.defaultExpectation.results = &PaymentRepositoryMockGetByIDMockResults{pp1, err}
-	return mmGetByIDMock.mock
+	mmGetByID.defaultExpectation.results = &PaymentRepositoryMockGetByIDResults{pp1, err}
+	return mmGetByID.mock
 }
 
-//Set uses given function f to mock the PaymentRepository.GetByIDMock method
-func (mmGetByIDMock *mPaymentRepositoryMockGetByIDMock) Set(f func(ctx context.Context, id int64) (pp1 *mm_repository.Payment, err error)) *PaymentRepositoryMock {
-	if mmGetByIDMock.defaultExpectation != nil {
-		mmGetByIDMock.mock.t.Fatalf("Default expectation is already set for the PaymentRepository.GetByIDMock method")
+//Set uses given function f to mock the PaymentRepository.GetByID method
+func (mmGetByID *mPaymentRepositoryMockGetByID) Set(f func(ctx context.Context, id int64) (pp1 *mm_repository.Payment, err error)) *PaymentRepositoryMock {
+	if mmGetByID.defaultExpectation != nil {
+		mmGetByID.mock.t.Fatalf("Default expectation is already set for the PaymentRepository.GetByID method")
 	}
 
-	if len(mmGetByIDMock.expectations) > 0 {
-		mmGetByIDMock.mock.t.Fatalf("Some expectations are already set for the PaymentRepository.GetByIDMock method")
+	if len(mmGetByID.expectations) > 0 {
+		mmGetByID.mock.t.Fatalf("Some expectations are already set for the PaymentRepository.GetByID method")
 	}
 
-	mmGetByIDMock.mock.funcGetByIDMock = f
-	return mmGetByIDMock.mock
+	mmGetByID.mock.funcGetByID = f
+	return mmGetByID.mock
 }
 
-// When sets expectation for the PaymentRepository.GetByIDMock which will trigger the result defined by the following
+// When sets expectation for the PaymentRepository.GetByID which will trigger the result defined by the following
 // Then helper
-func (mmGetByIDMock *mPaymentRepositoryMockGetByIDMock) When(ctx context.Context, id int64) *PaymentRepositoryMockGetByIDMockExpectation {
-	if mmGetByIDMock.mock.funcGetByIDMock != nil {
-		mmGetByIDMock.mock.t.Fatalf("PaymentRepositoryMock.GetByIDMock mock is already set by Set")
+func (mmGetByID *mPaymentRepositoryMockGetByID) When(ctx context.Context, id int64) *PaymentRepositoryMockGetByIDExpectation {
+	if mmGetByID.mock.funcGetByID != nil {
+		mmGetByID.mock.t.Fatalf("PaymentRepositoryMock.GetByID mock is already set by Set")
 	}
 
-	expectation := &PaymentRepositoryMockGetByIDMockExpectation{
-		mock:   mmGetByIDMock.mock,
-		params: &PaymentRepositoryMockGetByIDMockParams{ctx, id},
+	expectation := &PaymentRepositoryMockGetByIDExpectation{
+		mock:   mmGetByID.mock,
+		params: &PaymentRepositoryMockGetByIDParams{ctx, id},
 	}
-	mmGetByIDMock.expectations = append(mmGetByIDMock.expectations, expectation)
+	mmGetByID.expectations = append(mmGetByID.expectations, expectation)
 	return expectation
 }
 
-// Then sets up PaymentRepository.GetByIDMock return parameters for the expectation previously defined by the When method
-func (e *PaymentRepositoryMockGetByIDMockExpectation) Then(pp1 *mm_repository.Payment, err error) *PaymentRepositoryMock {
-	e.results = &PaymentRepositoryMockGetByIDMockResults{pp1, err}
+// Then sets up PaymentRepository.GetByID return parameters for the expectation previously defined by the When method
+func (e *PaymentRepositoryMockGetByIDExpectation) Then(pp1 *mm_repository.Payment, err error) *PaymentRepositoryMock {
+	e.results = &PaymentRepositoryMockGetByIDResults{pp1, err}
 	return e.mock
 }
 
-// GetByIDMock implements repository.PaymentRepository
-func (mmGetByIDMock *PaymentRepositoryMock) GetByIDMock(ctx context.Context, id int64) (pp1 *mm_repository.Payment, err error) {
-	mm_atomic.AddUint64(&mmGetByIDMock.beforeGetByIDMockCounter, 1)
-	defer mm_atomic.AddUint64(&mmGetByIDMock.afterGetByIDMockCounter, 1)
+// GetByID implements repository.PaymentRepository
+func (mmGetByID *PaymentRepositoryMock) GetByID(ctx context.Context, id int64) (pp1 *mm_repository.Payment, err error) {
+	mm_atomic.AddUint64(&mmGetByID.beforeGetByIDCounter, 1)
+	defer mm_atomic.AddUint64(&mmGetByID.afterGetByIDCounter, 1)
 
-	if mmGetByIDMock.inspectFuncGetByIDMock != nil {
-		mmGetByIDMock.inspectFuncGetByIDMock(ctx, id)
+	if mmGetByID.inspectFuncGetByID != nil {
+		mmGetByID.inspectFuncGetByID(ctx, id)
 	}
 
-	mm_params := &PaymentRepositoryMockGetByIDMockParams{ctx, id}
+	mm_params := &PaymentRepositoryMockGetByIDParams{ctx, id}
 
 	// Record call args
-	mmGetByIDMock.GetByIDMockMock.mutex.Lock()
-	mmGetByIDMock.GetByIDMockMock.callArgs = append(mmGetByIDMock.GetByIDMockMock.callArgs, mm_params)
-	mmGetByIDMock.GetByIDMockMock.mutex.Unlock()
+	mmGetByID.GetByIDMock.mutex.Lock()
+	mmGetByID.GetByIDMock.callArgs = append(mmGetByID.GetByIDMock.callArgs, mm_params)
+	mmGetByID.GetByIDMock.mutex.Unlock()
 
-	for _, e := range mmGetByIDMock.GetByIDMockMock.expectations {
+	for _, e := range mmGetByID.GetByIDMock.expectations {
 		if minimock.Equal(e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
 			return e.results.pp1, e.results.err
 		}
 	}
 
-	if mmGetByIDMock.GetByIDMockMock.defaultExpectation != nil {
-		mm_atomic.AddUint64(&mmGetByIDMock.GetByIDMockMock.defaultExpectation.Counter, 1)
-		mm_want := mmGetByIDMock.GetByIDMockMock.defaultExpectation.params
-		mm_got := PaymentRepositoryMockGetByIDMockParams{ctx, id}
+	if mmGetByID.GetByIDMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmGetByID.GetByIDMock.defaultExpectation.Counter, 1)
+		mm_want := mmGetByID.GetByIDMock.defaultExpectation.params
+		mm_got := PaymentRepositoryMockGetByIDParams{ctx, id}
 		if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
-			mmGetByIDMock.t.Errorf("PaymentRepositoryMock.GetByIDMock got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+			mmGetByID.t.Errorf("PaymentRepositoryMock.GetByID got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
 		}
 
-		mm_results := mmGetByIDMock.GetByIDMockMock.defaultExpectation.results
+		mm_results := mmGetByID.GetByIDMock.defaultExpectation.results
 		if mm_results == nil {
-			mmGetByIDMock.t.Fatal("No results are set for the PaymentRepositoryMock.GetByIDMock")
+			mmGetByID.t.Fatal("No results are set for the PaymentRepositoryMock.GetByID")
 		}
 		return (*mm_results).pp1, (*mm_results).err
 	}
-	if mmGetByIDMock.funcGetByIDMock != nil {
-		return mmGetByIDMock.funcGetByIDMock(ctx, id)
+	if mmGetByID.funcGetByID != nil {
+		return mmGetByID.funcGetByID(ctx, id)
 	}
-	mmGetByIDMock.t.Fatalf("Unexpected call to PaymentRepositoryMock.GetByIDMock. %v %v", ctx, id)
+	mmGetByID.t.Fatalf("Unexpected call to PaymentRepositoryMock.GetByID. %v %v", ctx, id)
 	return
 }
 
-// GetByIDMockAfterCounter returns a count of finished PaymentRepositoryMock.GetByIDMock invocations
-func (mmGetByIDMock *PaymentRepositoryMock) GetByIDMockAfterCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmGetByIDMock.afterGetByIDMockCounter)
+// GetByIDAfterCounter returns a count of finished PaymentRepositoryMock.GetByID invocations
+func (mmGetByID *PaymentRepositoryMock) GetByIDAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGetByID.afterGetByIDCounter)
 }
 
-// GetByIDMockBeforeCounter returns a count of PaymentRepositoryMock.GetByIDMock invocations
-func (mmGetByIDMock *PaymentRepositoryMock) GetByIDMockBeforeCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmGetByIDMock.beforeGetByIDMockCounter)
+// GetByIDBeforeCounter returns a count of PaymentRepositoryMock.GetByID invocations
+func (mmGetByID *PaymentRepositoryMock) GetByIDBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGetByID.beforeGetByIDCounter)
 }
 
-// Calls returns a list of arguments used in each call to PaymentRepositoryMock.GetByIDMock.
+// Calls returns a list of arguments used in each call to PaymentRepositoryMock.GetByID.
 // The list is in the same order as the calls were made (i.e. recent calls have a higher index)
-func (mmGetByIDMock *mPaymentRepositoryMockGetByIDMock) Calls() []*PaymentRepositoryMockGetByIDMockParams {
-	mmGetByIDMock.mutex.RLock()
+func (mmGetByID *mPaymentRepositoryMockGetByID) Calls() []*PaymentRepositoryMockGetByIDParams {
+	mmGetByID.mutex.RLock()
 
-	argCopy := make([]*PaymentRepositoryMockGetByIDMockParams, len(mmGetByIDMock.callArgs))
-	copy(argCopy, mmGetByIDMock.callArgs)
+	argCopy := make([]*PaymentRepositoryMockGetByIDParams, len(mmGetByID.callArgs))
+	copy(argCopy, mmGetByID.callArgs)
 
-	mmGetByIDMock.mutex.RUnlock()
+	mmGetByID.mutex.RUnlock()
 
 	return argCopy
 }
 
-// MinimockGetByIDMockDone returns true if the count of the GetByIDMock invocations corresponds
+// MinimockGetByIDDone returns true if the count of the GetByID invocations corresponds
 // the number of defined expectations
-func (m *PaymentRepositoryMock) MinimockGetByIDMockDone() bool {
-	for _, e := range m.GetByIDMockMock.expectations {
+func (m *PaymentRepositoryMock) MinimockGetByIDDone() bool {
+	for _, e := range m.GetByIDMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
 			return false
 		}
 	}
 
 	// if default expectation was set then invocations count should be greater than zero
-	if m.GetByIDMockMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterGetByIDMockCounter) < 1 {
+	if m.GetByIDMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterGetByIDCounter) < 1 {
 		return false
 	}
 	// if func was set then invocations count should be greater than zero
-	if m.funcGetByIDMock != nil && mm_atomic.LoadUint64(&m.afterGetByIDMockCounter) < 1 {
+	if m.funcGetByID != nil && mm_atomic.LoadUint64(&m.afterGetByIDCounter) < 1 {
 		return false
 	}
 	return true
 }
 
-// MinimockGetByIDMockInspect logs each unmet expectation
-func (m *PaymentRepositoryMock) MinimockGetByIDMockInspect() {
-	for _, e := range m.GetByIDMockMock.expectations {
+// MinimockGetByIDInspect logs each unmet expectation
+func (m *PaymentRepositoryMock) MinimockGetByIDInspect() {
+	for _, e := range m.GetByIDMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
-			m.t.Errorf("Expected call to PaymentRepositoryMock.GetByIDMock with params: %#v", *e.params)
+			m.t.Errorf("Expected call to PaymentRepositoryMock.GetByID with params: %#v", *e.params)
 		}
 	}
 
 	// if default expectation was set then invocations count should be greater than zero
-	if m.GetByIDMockMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterGetByIDMockCounter) < 1 {
-		if m.GetByIDMockMock.defaultExpectation.params == nil {
-			m.t.Error("Expected call to PaymentRepositoryMock.GetByIDMock")
+	if m.GetByIDMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterGetByIDCounter) < 1 {
+		if m.GetByIDMock.defaultExpectation.params == nil {
+			m.t.Error("Expected call to PaymentRepositoryMock.GetByID")
 		} else {
-			m.t.Errorf("Expected call to PaymentRepositoryMock.GetByIDMock with params: %#v", *m.GetByIDMockMock.defaultExpectation.params)
+			m.t.Errorf("Expected call to PaymentRepositoryMock.GetByID with params: %#v", *m.GetByIDMock.defaultExpectation.params)
 		}
 	}
 	// if func was set then invocations count should be greater than zero
-	if m.funcGetByIDMock != nil && mm_atomic.LoadUint64(&m.afterGetByIDMockCounter) < 1 {
-		m.t.Error("Expected call to PaymentRepositoryMock.GetByIDMock")
+	if m.funcGetByID != nil && mm_atomic.LoadUint64(&m.afterGetByIDCounter) < 1 {
+		m.t.Error("Expected call to PaymentRepositoryMock.GetByID")
 	}
 }
 
@@ -711,7 +711,7 @@ func (m *PaymentRepositoryMock) MinimockFinish() {
 	if !m.minimockDone() {
 		m.MinimockCreateInspect()
 
-		m.MinimockGetByIDMockInspect()
+		m.MinimockGetByIDInspect()
 
 		m.MinimockListInspect()
 		m.t.FailNow()
@@ -738,6 +738,6 @@ func (m *PaymentRepositoryMock) minimockDone() bool {
 	done := true
 	return done &&
 		m.MinimockCreateDone() &&
-		m.MinimockGetByIDMockDone() &&
+		m.MinimockGetByIDDone() &&
 		m.MinimockListDone()
 }

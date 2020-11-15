@@ -29,7 +29,7 @@ PKGMAP:=Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types,$\
         Mgoogle/protobuf/type.proto=github.com/gogo/protobuf/types,$\
         Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types
 
-# install minimock binary
+# deps installation
 .PHONY: install-minimock
 install-minimock:
 ifeq ($(wildcard $(MINIMOCK_BIN)),)
@@ -106,13 +106,18 @@ lint: install-lint
 test:
 	go test ./internal/... -count=1 -parallel=8 -run=$(run)
 
+# integration part
 .PHONY: test-integration
 test-integration:
 	go test ./test -count=1 -run=$(run)
 
+.PHONY: test-repos
+test-repos:
+	 go test ./test/repos -timeout=60s -count=1 -run=$(run)
+
 POSTGRES_SETUP_TEST := user=test password=test dbname=bank_test host=localhost port=6432 sslmode=disable
 
-# test db
+# migrations for test db
 .PHONY: test-migrations-up
 test-migrations-up:
 	$(LOCAL_BIN)/goose -dir "$(INTERNAL_PKG_PATH)/db/migrations" postgres "${POSTGRES_SETUP_TEST}" up
