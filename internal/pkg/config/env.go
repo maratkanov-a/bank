@@ -15,9 +15,9 @@ type Env struct {
 
 	DatabaseUser            string        `envconfig:"DATABASE_USER" default:"test"`
 	DatabasePassword        string        `envconfig:"DATABASE_PASSWORD" default:"test"`
-	DatabaseDBName          string        `envconfig:"DATABASE_NAME" default:"test"`
+	DatabaseDBName          string        `envconfig:"DATABASE_NAME" default:"bank_test"`
 	DatabaseHost            string        `envconfig:"DATABASE_HOST" default:"localhost"`
-	DatabasePort            int           `envconfig:"DATABASE_PORT" default:"5432"`
+	DatabasePort            int           `envconfig:"DATABASE_PORT" default:"6432"`
 	DatabaseMaxIdleConns    int           `envconfig:"DATABASE_MAX_IDLE_CONNS" default:"10"`
 	DatabaseMaxOpenConns    int           `envconfig:"DATABASE_MAX_OPEN_CONNS" default:"10"`
 	DatabaseConnMaxLifetime time.Duration `envconfig:"DATABASE_CONN_MAX_LIFETIME" default:"10s"`

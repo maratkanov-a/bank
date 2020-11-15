@@ -1,4 +1,4 @@
-INTERNAL_PKG_PATH="./internal/pkg"
+INTERNAL_PKG_PATH=./internal/pkg
 PROTO_FILES_PATH="./api"
 LOCAL_BIN:=$(CURDIR)/bin
 MINIMOCK_BIN:=$(LOCAL_BIN)/minimock
@@ -115,16 +115,16 @@ test-integration:
 test-repos:
 	 go test ./test/repos -timeout=60s -count=1 -run=$(run)
 
-POSTGRES_SETUP_TEST := user=test password=test dbname=bank_test host=localhost port=6432 sslmode=disable
+POSTGRES_SETUP_TEST:=user=test password=test dbname=bank_test host=localhost port=6432 sslmode=disable
 
 # migrations for test db
 .PHONY: test-migrations-up
 test-migrations-up:
-	$(LOCAL_BIN)/goose -dir "$(INTERNAL_PKG_PATH)/db/migrations" postgres "${POSTGRES_SETUP_TEST}" up
+	goose -dir "$(INTERNAL_PKG_PATH)/db/migrations" postgres "${POSTGRES_SETUP_TEST}" up
 
 .PHONY: test-migrations-down
 test-migrations-down:
-	$(LOCAL_BIN)/goose -dir "$(INTERNAL_PKG_PATH)/db/migrations" postgres "${POSTGRES_SETUP_TEST}" down
+	goose -dir "$(INTERNAL_PKG_PATH)/db/migrations" postgres "${POSTGRES_SETUP_TEST}" down
 
 # docker-compose aliases
 .PHONY: compose-up
