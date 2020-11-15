@@ -5,16 +5,65 @@ package accounts
 
 import (
 	"context"
+	"errors"
+	"github.com/maratkanov-a/bank/pkg/accounts"
+	"github.com/stretchr/testify/assert"
 	"testing"
 
-	desc "github.com/maratkanov-a/bank/pkg/accounts"
 	"github.com/stretchr/testify/require"
 )
 
 func TestImplementation_Delete(t *testing.T) {
-	api := NewAccounts()
-	_, err := api.Delete(context.Background(), &desc.DeleteRequest{})
+	var (
+		ctx             = context.Background()
+		ID        int64 = 1192
+		someError       = errors.New("some error")
+		validReq        = &accounts.DeleteRequest{ID: ID}
+	)
 
-	require.NotNil(t, err)
-	require.Equal(t, "Delete not implemented", err.Error())
+	t.Run("validate", func(t *testing.T) {
+		for _, tc := range []struct {
+			name string
+
+			req *accounts.DeleteRequest
+
+			errorMessage string
+		}{
+			{
+				name:         "no id; expect error",
+				req:          &accounts.DeleteRequest{},
+				errorMessage: "invalid DeleteRequest.ID",
+			},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				i := Implementation{}
+
+				resp, err := i.Delete(ctx, tc.req)
+				require.Error(t, err)
+				require.Nil(t, resp)
+
+				assert.Contains(t, err.Error(), tc.errorMessage)
+			})
+		}
+	})
+
+	t.Run("repo err; expect err", func(t *testing.T) {
+		i := newTestImplementation(t)
+		i.arMock.DeleteMock.Expect(ctx, ID).Return(someError)
+
+		resp, err := i.Delete(ctx, validReq)
+		require.Error(t, err)
+		require.Nil(t, resp)
+
+		assert.Equal(t, someError, err)
+	})
+
+	t.Run("expect ok", func(t *testing.T) {
+		i := newTestImplementation(t)
+		i.arMock.DeleteMock.Return(nil)
+
+		resp, err := i.Delete(ctx, validReq)
+		require.NoError(t, err)
+		require.Empty(t, resp)
+	})
 }

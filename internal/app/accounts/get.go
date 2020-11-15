@@ -5,11 +5,28 @@ package accounts
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 
 	desc "github.com/maratkanov-a/bank/pkg/accounts"
-	"github.com/pkg/errors"
 )
 
 func (i *Implementation) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	return nil, errors.New("Get not implemented")
+	if err := req.Validate(); err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	account, err := i.ar.GetByID(ctx, req.ID)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	ca, err := convertToProto(account)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	return &desc.GetResponse{Account: ca}, nil
 }

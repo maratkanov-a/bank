@@ -5,10 +5,13 @@ import (
 	"github.com/maratkanov-a/bank/internal/app/accounts"
 	"github.com/maratkanov-a/bank/internal/app/payments"
 	"github.com/maratkanov-a/bank/internal/pkg/config"
+	"github.com/maratkanov-a/bank/internal/pkg/db"
+	"github.com/maratkanov-a/bank/internal/pkg/repository/postgresql"
 	"github.com/maratkanov-a/bank/internal/pkg/server"
 	"github.com/sirupsen/logrus"
 	_ "github.com/utrack/clay/doc/example/static/statik"
 	"github.com/utrack/clay/v2/transport"
+	"log"
 )
 
 func run() error {
@@ -17,24 +20,24 @@ func run() error {
 		logrus.Fatalf("can't get environments: %v", err)
 	}
 
-	//db, err := database.NewDB(database.Options{
-	//	User:            cfg.DatabaseUser,
-	//	Password:        cfg.DatabasePassword,
-	//	DBName:          cfg.DatabaseDBName,
-	//	Host:            cfg.DatabaseHost,
-	//	Port:            cfg.DatabasePort,
-	//	MaxIdleConns:    cfg.DatabaseMaxIdleConns,
-	//	MaxOpenConns:    cfg.DatabaseMaxOpenConns,
-	//	ConnMaxLifetime: cfg.DatabaseConnMaxLifetime,
-	//})
-	//if err != nil {
-	//	log.Fatalf("can't connect to database: %v", err)
-	//}
+	db, err := database.NewDB(database.Options{
+		User:            cfg.DatabaseUser,
+		Password:        cfg.DatabasePassword,
+		DBName:          cfg.DatabaseDBName,
+		Host:            cfg.DatabaseHost,
+		Port:            cfg.DatabasePort,
+		MaxIdleConns:    cfg.DatabaseMaxIdleConns,
+		MaxOpenConns:    cfg.DatabaseMaxOpenConns,
+		ConnMaxLifetime: cfg.DatabaseConnMaxLifetime,
+	})
+	if err != nil {
+		log.Fatalf("can't connect to database: %v", err)
+	}
 
-	//accountsRepo := postgresql.NewAccounts(db)
+	accountsRepo := postgresql.NewAccounts(db)
 	//paymentsRepo := postgresql.NewPayments(db)
 
-	accountsClient := accounts.NewAccounts()
+	accountsClient := accounts.NewAccounts(accountsRepo)
 	paymentsClient := payments.NewPayments()
 
 	compound := transport.NewCompoundServiceDesc(

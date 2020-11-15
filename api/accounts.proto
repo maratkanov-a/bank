@@ -3,28 +3,59 @@ syntax = "proto3";
 package accounts;
 
 import "google/api/annotations.proto";
+import "google/protobuf/wrappers.proto";
 import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
 
+enum currencyType {
+    USD = 0;
+    EUR = 1;
+    RU = 2;
+}
+
+message Account {
+    int64 ID = 1;
+    string name = 2;
+    double balance = 3;
+    currencyType currency = 4;
+    bool isAvailable = 5;
+}
+
 // list
-message ListRequest{}
-message ListResponse{}
+message ListRequest{
+    google.protobuf.BoolValue isAvailable = 1;
+}
+message ListResponse{
+    repeated Account accounts = 1;
+}
 // end of list
 
 // get
 message GetRequest{
     int64 ID = 1 [(validate.rules).int64.gt = 0];
 }
-message GetResponse{}
+message GetResponse{
+    Account account = 1;
+}
 // end of get
 
 // create
-message CreateRequest{}
-message CreateResponse{}
+message CreateRequest{
+    string name = 1 [(validate.rules).string.min_len = 1];
+    double balance = 2 [(validate.rules).double.gte = 0];
+    currencyType currency = 3 [(validate.rules).enum.defined_only = true];
+}
+message CreateResponse{
+    int64 ID = 1;
+}
 // end of create
 
 // update
 message UpdateRequest{
     int64 ID = 1 [(validate.rules).int64.gt = 0];
+    string name = 2 [(validate.rules).string.min_len = 1];
+    double balance = 3 [(validate.rules).double.gte = 0];
+    currencyType currency = 4 [(validate.rules).enum.defined_only = true];
+    bool isAvailable = 5;
 }
 message UpdateResponse{}
 // end of update

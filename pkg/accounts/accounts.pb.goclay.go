@@ -778,6 +778,15 @@ var _swaggerDef_accounts_proto = []byte(`{
             }
           }
         },
+        "parameters": [
+          {
+            "name": "isAvailable",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          }
+        ],
         "tags": [
           "Accounts"
         ]
@@ -888,21 +897,75 @@ var _swaggerDef_accounts_proto = []byte(`{
     }
   },
   "definitions": {
+    "accountsAccount": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "number",
+          "format": "double"
+        },
+        "currency": {
+          "$ref": "#/definitions/accountscurrencyType"
+        },
+        "isAvailable": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
     "accountsCreateRequest": {
       "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "number",
+          "format": "double"
+        },
+        "currency": {
+          "$ref": "#/definitions/accountscurrencyType"
+        }
+      },
       "title": "create"
     },
     "accountsCreateResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
     },
     "accountsDeleteResponse": {
       "type": "object"
     },
     "accountsGetResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/accountsAccount"
+        }
+      }
     },
     "accountsListResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/accountsAccount"
+          }
+        }
+      }
     },
     "accountsUpdateRequest": {
       "type": "object",
@@ -910,12 +973,35 @@ var _swaggerDef_accounts_proto = []byte(`{
         "ID": {
           "type": "string",
           "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "number",
+          "format": "double"
+        },
+        "currency": {
+          "$ref": "#/definitions/accountscurrencyType"
+        },
+        "isAvailable": {
+          "type": "boolean",
+          "format": "boolean"
         }
       },
       "title": "update"
     },
     "accountsUpdateResponse": {
       "type": "object"
+    },
+    "accountscurrencyType": {
+      "type": "string",
+      "enum": [
+        "USD",
+        "EUR",
+        "RU"
+      ],
+      "default": "USD"
     }
   }
 }

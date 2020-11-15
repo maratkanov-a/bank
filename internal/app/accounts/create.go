@@ -5,11 +5,42 @@ package accounts
 
 import (
 	"context"
+	"github.com/maratkanov-a/bank/internal/pkg/balance"
+	"github.com/maratkanov-a/bank/internal/pkg/currency"
+	"github.com/maratkanov-a/bank/internal/pkg/repository"
+	"github.com/sirupsen/logrus"
 
 	desc "github.com/maratkanov-a/bank/pkg/accounts"
-	"github.com/pkg/errors"
 )
 
 func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
-	return nil, errors.New("Create not implemented")
+	if err := req.Validate(); err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	curr, err := currency.ConvertCurrencyToRepository(req.Currency)
+	if err != nil {
+		return nil, err
+	}
+
+	bal, err := balance.ConvertToCents(req.Balance)
+	if err != nil {
+		return nil, err
+	}
+
+	acc := &repository.Account{
+		Name:        req.Name,
+		Balance:     bal,
+		Currency:    curr,
+		IsAvailable: true,
+	}
+
+	id, err := i.ar.Create(ctx, acc)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	return &desc.CreateResponse{ID: id}, nil
 }

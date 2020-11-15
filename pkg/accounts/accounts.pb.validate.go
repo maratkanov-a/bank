@@ -36,12 +36,101 @@ var (
 // define the regex for a UUID once up-front
 var _accounts_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
+// Validate checks the field values on Account with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *Account) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for ID
+
+	// no validation rules for Name
+
+	// no validation rules for Balance
+
+	// no validation rules for Currency
+
+	// no validation rules for IsAvailable
+
+	return nil
+}
+
+// AccountValidationError is the validation error returned by Account.Validate
+// if the designated constraints aren't met.
+type AccountValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AccountValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AccountValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AccountValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AccountValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AccountValidationError) ErrorName() string { return "AccountValidationError" }
+
+// Error satisfies the builtin error interface
+func (e AccountValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAccount.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AccountValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AccountValidationError{}
+
 // Validate checks the field values on ListRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
 // is returned.
 func (m *ListRequest) Validate() error {
 	if m == nil {
 		return nil
+	}
+
+	{
+		tmp := m.GetIsAvailable()
+
+		if v, ok := interface{}(tmp).(interface{ Validate() error }); ok {
+
+			if err := v.Validate(); err != nil {
+				return ListRequestValidationError{
+					field:  "IsAvailable",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
 	}
 
 	return nil
@@ -107,6 +196,26 @@ var _ interface {
 func (m *ListResponse) Validate() error {
 	if m == nil {
 		return nil
+	}
+
+	for idx, item := range m.GetAccounts() {
+		_, _ = idx, item
+
+		{
+			tmp := item
+
+			if v, ok := interface{}(tmp).(interface{ Validate() error }); ok {
+
+				if err := v.Validate(); err != nil {
+					return ListResponseValidationError{
+						field:  fmt.Sprintf("Accounts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+		}
+
 	}
 
 	return nil
@@ -245,6 +354,21 @@ func (m *GetResponse) Validate() error {
 		return nil
 	}
 
+	{
+		tmp := m.GetAccount()
+
+		if v, ok := interface{}(tmp).(interface{ Validate() error }); ok {
+
+			if err := v.Validate(); err != nil {
+				return GetResponseValidationError{
+					field:  "Account",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -308,6 +432,27 @@ var _ interface {
 func (m *CreateRequest) Validate() error {
 	if m == nil {
 		return nil
+	}
+
+	if utf8.RuneCountInString(m.GetName()) < 1 {
+		return CreateRequestValidationError{
+			field:  "Name",
+			reason: "value length must be at least 1 runes",
+		}
+	}
+
+	if m.GetBalance() < 0 {
+		return CreateRequestValidationError{
+			field:  "Balance",
+			reason: "value must be greater than or equal to 0",
+		}
+	}
+
+	if _, ok := CurrencyType_name[int32(m.GetCurrency())]; !ok {
+		return CreateRequestValidationError{
+			field:  "Currency",
+			reason: "value must be one of the defined enum values",
+		}
 	}
 
 	return nil
@@ -374,6 +519,8 @@ func (m *CreateResponse) Validate() error {
 	if m == nil {
 		return nil
 	}
+
+	// no validation rules for ID
 
 	return nil
 }
@@ -446,6 +593,29 @@ func (m *UpdateRequest) Validate() error {
 			reason: "value must be greater than 0",
 		}
 	}
+
+	if utf8.RuneCountInString(m.GetName()) < 1 {
+		return UpdateRequestValidationError{
+			field:  "Name",
+			reason: "value length must be at least 1 runes",
+		}
+	}
+
+	if m.GetBalance() < 0 {
+		return UpdateRequestValidationError{
+			field:  "Balance",
+			reason: "value must be greater than or equal to 0",
+		}
+	}
+
+	if _, ok := CurrencyType_name[int32(m.GetCurrency())]; !ok {
+		return UpdateRequestValidationError{
+			field:  "Currency",
+			reason: "value must be one of the defined enum values",
+		}
+	}
+
+	// no validation rules for IsAvailable
 
 	return nil
 }

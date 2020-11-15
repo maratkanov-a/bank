@@ -5,11 +5,33 @@ package accounts
 
 import (
 	"context"
-
+	"github.com/gogo/protobuf/types"
+	"github.com/maratkanov-a/bank/internal/pkg/repository"
 	desc "github.com/maratkanov-a/bank/pkg/accounts"
-	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
+func (i *Implementation) listAccounts(ctx context.Context, isAvailable *types.BoolValue) ([]*repository.Account, error) {
+	if isAvailable != nil {
+		return i.ar.ListByAvailability(ctx, isAvailable.Value)
+	}
+
+	return i.ar.List(ctx)
+}
+
 func (i *Implementation) List(ctx context.Context, req *desc.ListRequest) (*desc.ListResponse, error) {
-	return nil, errors.New("List not implemented")
+	if err := req.Validate(); err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	accounts, err := i.listAccounts(ctx, req.IsAvailable)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	return &desc.ListResponse{
+		Accounts: convertToProtos(accounts),
+	}, nil
 }

@@ -5,11 +5,22 @@ package accounts
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 
 	desc "github.com/maratkanov-a/bank/pkg/accounts"
-	"github.com/pkg/errors"
 )
 
 func (i *Implementation) Delete(ctx context.Context, req *desc.DeleteRequest) (*desc.DeleteResponse, error) {
-	return nil, errors.New("Delete not implemented")
+	if err := req.Validate(); err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	err := i.ar.Delete(ctx, req.ID)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	return &desc.DeleteResponse{}, nil
 }

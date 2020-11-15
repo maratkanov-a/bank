@@ -5,16 +5,98 @@ package accounts
 
 import (
 	"context"
-	"testing"
-
-	desc "github.com/maratkanov-a/bank/pkg/accounts"
+	"errors"
+	"github.com/maratkanov-a/bank/internal/pkg/repository"
+	"github.com/maratkanov-a/bank/pkg/accounts"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestImplementation_Create(t *testing.T) {
-	api := NewAccounts()
-	_, err := api.Create(context.Background(), &desc.CreateRequest{})
+	var (
+		ctx             = context.Background()
+		successID int64 = 1192
+		someError       = errors.New("some error")
+		validReq        = &accounts.CreateRequest{
+			Name:     "someName",
+			Balance:  100.11,
+			Currency: accounts.CurrencyType_RU,
+		}
+		expectAccountRepo = &repository.Account{
+			Name:        "someName",
+			Balance:     10011,
+			Currency:    "RU",
+			IsAvailable: true,
+		}
+	)
 
-	require.NotNil(t, err)
-	require.Equal(t, "Create not implemented", err.Error())
+	t.Run("validate", func(t *testing.T) {
+		for _, tc := range []struct {
+			name string
+
+			req *accounts.CreateRequest
+
+			errorMessage string
+		}{
+			{
+				name: "invalid name; expect error",
+				req: &accounts.CreateRequest{
+					Balance:  100.11,
+					Currency: accounts.CurrencyType_RU,
+				},
+				errorMessage: "invalid CreateRequest.Name:",
+			},
+			{
+				name: "invalid balance; expect error",
+				req: &accounts.CreateRequest{
+					Name:     "someName",
+					Balance:  100.111,
+					Currency: accounts.CurrencyType_RU,
+				},
+				errorMessage: "incorrect currency value",
+			},
+			{
+				name: "invalid currency; expect error",
+				req: &accounts.CreateRequest{
+					Name:     "someName",
+					Balance:  100.11,
+					Currency: 123,
+				},
+				errorMessage: "invalid CreateRequest.Currency:",
+			},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				i := Implementation{}
+
+				resp, err := i.Create(ctx, tc.req)
+				require.Error(t, err)
+				require.Nil(t, resp)
+
+				assert.Contains(t, err.Error(), tc.errorMessage)
+			})
+		}
+	})
+
+	t.Run("repo err; expect err", func(t *testing.T) {
+		i := newTestImplementation(t)
+		i.arMock.CreateMock.Expect(ctx, expectAccountRepo).Return(0, someError)
+
+		resp, err := i.Create(ctx, validReq)
+		require.Error(t, err)
+		require.Nil(t, resp)
+
+		assert.Equal(t, someError, err)
+	})
+
+	t.Run("expect ok", func(t *testing.T) {
+		i := newTestImplementation(t)
+		i.arMock.CreateMock.Return(successID, nil)
+
+		resp, err := i.Create(ctx, validReq)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		assert.Error(t, someError, resp.ID)
+	})
 }

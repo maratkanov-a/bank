@@ -8,6 +8,8 @@ require (
 	github.com/go-chi/chi v3.3.4+incompatible
 	github.com/go-openapi/spec v0.19.12
 	github.com/gogo/protobuf v1.3.1
+	github.com/gojuno/minimock v1.9.2 // indirect
+	github.com/gojuno/minimock/v3 v3.0.8
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/protobuf v1.4.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -18,6 +20,7 @@ require (
 	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
+	github.com/shopspring/decimal v1.2.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.6.1
 	github.com/utrack/clay/doc/example v0.0.0-20201026130614-4706f034cfde
