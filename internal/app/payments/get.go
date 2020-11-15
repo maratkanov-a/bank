@@ -5,11 +5,28 @@ package payments
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 
 	desc "github.com/maratkanov-a/bank/pkg/payments"
-	"github.com/pkg/errors"
 )
 
 func (i *Implementation) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	return nil, errors.New("Get not implemented")
+	if err := req.Validate(); err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	payment, err := i.pr.GetByIDMock(ctx, req.ID)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	convertedP, err := convertToProto(payment)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	return &desc.GetResponse{Payment: convertedP}, nil
 }

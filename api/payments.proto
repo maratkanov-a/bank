@@ -8,21 +8,45 @@ import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
 
 // list
 message ListRequest{}
-message ListResponse{}
+message ListResponse{
+    repeated Payment payments = 1;
+}
 // end of list
+
+enum directionType {
+    incoming = 0;
+    outgoing = 1;
+
+}
+
+message Payment {
+    int64 ID = 1;
+    double amount = 2;
+    int64 accountFrom = 3;
+    int64 accountTo = 4;
+    directionType direction = 5;
+}
 
 
 // get
 message GetRequest{
     int64 ID = 1 [(validate.rules).int64.gt = 0];
 }
-message GetResponse{}
+message GetResponse{
+    Payment payment = 1;
+}
 // end of get
 
 
 // create
-message CreateRequest{}
-message CreateResponse{}
+message CreateRequest{
+    double amount = 2 [(validate.rules).double.gt = 0];
+    int64 accountFrom = 3 [(validate.rules).int64.gt = 0];
+    int64 accountTo = 4 [(validate.rules).int64.gt = 0];
+}
+message CreateResponse{
+    int64 ID = 1;
+}
 // end of create
 
 service Payments {

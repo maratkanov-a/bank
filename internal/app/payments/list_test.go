@@ -5,16 +5,51 @@ package payments
 
 import (
 	"context"
-	"testing"
-
-	desc "github.com/maratkanov-a/bank/pkg/payments"
+	"errors"
+	"github.com/maratkanov-a/bank/internal/pkg/direction"
+	"github.com/maratkanov-a/bank/internal/pkg/repository"
+	"github.com/maratkanov-a/bank/pkg/payments"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestImplementation_List(t *testing.T) {
-	api := NewPayments()
-	_, err := api.List(context.Background(), &desc.ListRequest{})
+	var (
+		ctx          = context.Background()
+		someError    = errors.New("some error")
+		req          = &payments.ListRequest{}
+		repoResponse = []*repository.Payment{
+			{ID: 112233, AccountFrom: 123, AccountTo: 345, Amount: 1122, Direction: direction.Outgoing},
+			{ID: 445566, AccountFrom: 567, AccountTo: 789, Amount: 22, Direction: direction.Incoming},
+			{ID: 778899, AccountFrom: 101112, AccountTo: 131416, Amount: 120, Direction: direction.Outgoing},
+		}
+		expected = []*payments.Payment{
+			{ID: 112233, AccountFrom: 123, AccountTo: 345, Amount: 11.22, Direction: payments.DirectionType_outgoing},
+			{ID: 445566, AccountFrom: 567, AccountTo: 789, Amount: 0.22, Direction: payments.DirectionType_incoming},
+			{ID: 778899, AccountFrom: 101112, AccountTo: 131416, Amount: 1.20, Direction: payments.DirectionType_outgoing},
+		}
+	)
 
-	require.NotNil(t, err)
-	require.Equal(t, "List not implemented", err.Error())
+	t.Run("with avail err; expect err", func(t *testing.T) {
+		i := newTestImplementation(t)
+		i.prMock.ListMock.Expect(ctx).Return(nil, someError)
+
+		resp, err := i.List(ctx, req)
+		require.Error(t, err)
+		require.Nil(t, resp)
+
+		assert.Equal(t, someError, err)
+	})
+
+	t.Run("expect ok", func(t *testing.T) {
+		i := newTestImplementation(t)
+		i.prMock.ListMock.Return(repoResponse, nil)
+
+		resp, err := i.List(ctx, req)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		assert.Equal(t, expected, resp.Payments)
+	})
 }

@@ -1,6 +1,8 @@
 package repository
 
-import "context"
+import (
+	"context"
+)
 
 type AccountRepository interface {
 	List(ctx context.Context) ([]*Account, error)
@@ -14,4 +16,8 @@ type AccountRepository interface {
 	Delete(ctx context.Context, id int64) error
 }
 
-type PaymentRepository interface{}
+type PaymentRepository interface {
+	List(ctx context.Context) ([]*Payment, error)
+	GetByIDMock(ctx context.Context, id int64) (*Payment, error)
+	Create(ctx context.Context, from, to int64, amount int64) (int64, error)
+}

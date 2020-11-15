@@ -4,19 +4,58 @@
 package payments
 
 import (
+	"github.com/maratkanov-a/bank/internal/pkg/balance"
+	"github.com/maratkanov-a/bank/internal/pkg/direction"
+	"github.com/maratkanov-a/bank/internal/pkg/repository"
 	desc "github.com/maratkanov-a/bank/pkg/payments"
+	"github.com/sirupsen/logrus"
 	"github.com/utrack/clay/v2/transport"
 )
 
-type Implementation struct{}
+type Implementation struct {
+	pr repository.PaymentRepository
+}
 
 // NewPayments create new Implementation
-func NewPayments() *Implementation {
-	return &Implementation{}
+func NewPayments(pr repository.PaymentRepository) *Implementation {
+	return &Implementation{
+		pr: pr,
+	}
 }
 
 // GetDescription is a simple alias to the ServiceDesc constructor.
 // It makes it possible to register the service implementation @ the server.
 func (i *Implementation) GetDescription() transport.ServiceDesc {
 	return desc.NewPaymentsServiceDesc(i)
+}
+
+func convertToProto(p *repository.Payment) (*desc.Payment, error) {
+	a, err := balance.ConvertFromCents(p.Amount)
+	if err != nil {
+		return nil, err
+	}
+
+	d, err := direction.ConvertCurrencyToProto(p.Direction)
+
+	return &desc.Payment{
+		ID:          p.ID,
+		Amount:      a,
+		AccountFrom: p.AccountFrom,
+		AccountTo:   p.AccountTo,
+		Direction:   d,
+	}, nil
+}
+
+func convertToProtos(ps []*repository.Payment) []*desc.Payment {
+	var converted = make([]*desc.Payment, 0, len(ps))
+	for _, p := range ps {
+		cp, err := convertToProto(p)
+		if err != nil {
+			logrus.Error(err)
+			continue
+		}
+		converted = append(converted, cp)
+	}
+
+	return converted
 }

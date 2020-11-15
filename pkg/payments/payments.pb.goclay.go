@@ -580,16 +580,81 @@ var _swaggerDef_payments_proto = []byte(`{
   "definitions": {
     "paymentsCreateRequest": {
       "type": "object",
+      "properties": {
+        "amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "accountFrom": {
+          "type": "string",
+          "format": "int64"
+        },
+        "accountTo": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
       "title": "create"
     },
     "paymentsCreateResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
     },
     "paymentsGetResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "payment": {
+          "$ref": "#/definitions/paymentsPayment"
+        }
+      }
     },
     "paymentsListResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "payments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paymentsPayment"
+          }
+        }
+      }
+    },
+    "paymentsPayment": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "accountFrom": {
+          "type": "string",
+          "format": "int64"
+        },
+        "accountTo": {
+          "type": "string",
+          "format": "int64"
+        },
+        "direction": {
+          "$ref": "#/definitions/paymentsdirectionType"
+        }
+      }
+    },
+    "paymentsdirectionType": {
+      "type": "string",
+      "enum": [
+        "incoming",
+        "outgoing"
+      ],
+      "default": "incoming"
     }
   }
 }

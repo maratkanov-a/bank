@@ -20,11 +20,18 @@ func TestImplementation_Get(t *testing.T) {
 		someError       = errors.New("some error")
 		validReq        = &accounts.GetRequest{ID: ID}
 
-		expectAccountRepo = &repository.Account{
+		accountRepo = &repository.Account{
 			ID:       ID,
 			Name:     "someName",
 			Balance:  10011,
 			Currency: "RU",
+		}
+
+		expected = &accounts.Account{
+			ID:       ID,
+			Name:     "someName",
+			Balance:  10011,
+			Currency: accounts.CurrencyType_RU,
 		}
 
 		invalidEAccountRepo = &repository.Account{
@@ -85,15 +92,12 @@ func TestImplementation_Get(t *testing.T) {
 
 	t.Run("expect ok", func(t *testing.T) {
 		i := newTestImplementation(t)
-		i.arMock.GetByIDMock.Return(expectAccountRepo, nil)
+		i.arMock.GetByIDMock.Return(accountRepo, nil)
 
 		resp, err := i.Get(ctx, validReq)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		converted, err := convertToProto(expectAccountRepo)
-		require.NoError(t, err)
-
-		assert.Equal(t, converted, resp.Account)
+		assert.Equal(t, expected, resp.Account)
 	})
 }

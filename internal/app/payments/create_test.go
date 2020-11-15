@@ -5,16 +5,98 @@ package payments
 
 import (
 	"context"
-	"testing"
-
-	desc "github.com/maratkanov-a/bank/pkg/payments"
+	"errors"
+	"github.com/maratkanov-a/bank/pkg/payments"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestImplementation_Create(t *testing.T) {
-	api := NewPayments()
-	_, err := api.Create(context.Background(), &desc.CreateRequest{})
+	var (
+		ctx             = context.Background()
+		successID int64 = 1192
+		someError       = errors.New("some error")
+		validReq        = &payments.CreateRequest{
+			Amount:      10.11,
+			AccountFrom: 11,
+			AccountTo:   12,
+		}
+	)
 
-	require.NotNil(t, err)
-	require.Equal(t, "Create not implemented", err.Error())
+	t.Run("validate", func(t *testing.T) {
+		for _, tc := range []struct {
+			name string
+
+			req *payments.CreateRequest
+
+			errorMessage string
+		}{
+			{
+				name: "no amount; expect error",
+				req: &payments.CreateRequest{
+					AccountFrom: 11,
+					AccountTo:   12,
+				},
+				errorMessage: "invalid CreateRequest.Amount",
+			},
+			{
+				name: "no from; expect error",
+				req: &payments.CreateRequest{
+					Amount:    10.11,
+					AccountTo: 12,
+				},
+				errorMessage: "invalid CreateRequest.AccountFrom",
+			},
+			{
+				name: "no to; expect error",
+				req: &payments.CreateRequest{
+					Amount:      10.11,
+					AccountFrom: 12,
+				},
+				errorMessage: "invalid CreateRequest.AccountTo",
+			},
+			{
+				name: "invalid amount; expect error",
+				req: &payments.CreateRequest{
+					Amount:      10.111,
+					AccountFrom: 11,
+					AccountTo:   12,
+				},
+				errorMessage: "incorrect currency value",
+			},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				i := Implementation{}
+
+				resp, err := i.Create(ctx, tc.req)
+				require.Error(t, err)
+				require.Nil(t, resp)
+
+				assert.Contains(t, err.Error(), tc.errorMessage)
+			})
+		}
+	})
+
+	t.Run("repo err; expect err", func(t *testing.T) {
+		i := newTestImplementation(t)
+		i.prMock.CreateMock.Expect(ctx, 11, 12, 1011).Return(0, someError)
+
+		resp, err := i.Create(ctx, validReq)
+		require.Error(t, err)
+		require.Nil(t, resp)
+
+		assert.Equal(t, someError, err)
+	})
+
+	t.Run("expect ok", func(t *testing.T) {
+		i := newTestImplementation(t)
+		i.prMock.CreateMock.Return(successID, nil)
+
+		resp, err := i.Create(ctx, validReq)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		assert.Error(t, someError, resp.ID)
+	})
 }

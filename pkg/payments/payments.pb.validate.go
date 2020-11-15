@@ -109,6 +109,26 @@ func (m *ListResponse) Validate() error {
 		return nil
 	}
 
+	for idx, item := range m.GetPayments() {
+		_, _ = idx, item
+
+		{
+			tmp := item
+
+			if v, ok := interface{}(tmp).(interface{ Validate() error }); ok {
+
+				if err := v.Validate(); err != nil {
+					return ListResponseValidationError{
+						field:  fmt.Sprintf("Payments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+		}
+
+	}
+
 	return nil
 }
 
@@ -165,6 +185,80 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListResponseValidationError{}
+
+// Validate checks the field values on Payment with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *Payment) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for ID
+
+	// no validation rules for Amount
+
+	// no validation rules for AccountFrom
+
+	// no validation rules for AccountTo
+
+	// no validation rules for Direction
+
+	return nil
+}
+
+// PaymentValidationError is the validation error returned by Payment.Validate
+// if the designated constraints aren't met.
+type PaymentValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PaymentValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PaymentValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PaymentValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PaymentValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PaymentValidationError) ErrorName() string { return "PaymentValidationError" }
+
+// Error satisfies the builtin error interface
+func (e PaymentValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPayment.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PaymentValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PaymentValidationError{}
 
 // Validate checks the field values on GetRequest with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
@@ -245,6 +339,21 @@ func (m *GetResponse) Validate() error {
 		return nil
 	}
 
+	{
+		tmp := m.GetPayment()
+
+		if v, ok := interface{}(tmp).(interface{ Validate() error }); ok {
+
+			if err := v.Validate(); err != nil {
+				return GetResponseValidationError{
+					field:  "Payment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -308,6 +417,27 @@ var _ interface {
 func (m *CreateRequest) Validate() error {
 	if m == nil {
 		return nil
+	}
+
+	if m.GetAmount() <= 0 {
+		return CreateRequestValidationError{
+			field:  "Amount",
+			reason: "value must be greater than 0",
+		}
+	}
+
+	if m.GetAccountFrom() <= 0 {
+		return CreateRequestValidationError{
+			field:  "AccountFrom",
+			reason: "value must be greater than 0",
+		}
+	}
+
+	if m.GetAccountTo() <= 0 {
+		return CreateRequestValidationError{
+			field:  "AccountTo",
+			reason: "value must be greater than 0",
+		}
 	}
 
 	return nil
@@ -374,6 +504,8 @@ func (m *CreateResponse) Validate() error {
 	if m == nil {
 		return nil
 	}
+
+	// no validation rules for ID
 
 	return nil
 }

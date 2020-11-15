@@ -5,11 +5,22 @@ package payments
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 
 	desc "github.com/maratkanov-a/bank/pkg/payments"
-	"github.com/pkg/errors"
 )
 
 func (i *Implementation) List(ctx context.Context, req *desc.ListRequest) (*desc.ListResponse, error) {
-	return nil, errors.New("List not implemented")
+	if err := req.Validate(); err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	payments, err := i.pr.List(ctx)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	return &desc.ListResponse{Payments: convertToProtos(payments)}, nil
 }

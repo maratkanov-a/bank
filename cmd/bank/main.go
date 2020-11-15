@@ -35,10 +35,10 @@ func run() error {
 	}
 
 	accountsRepo := postgresql.NewAccounts(db)
-	//paymentsRepo := postgresql.NewPayments(db)
+	paymentsRepo := postgresql.NewPayments(db)
 
 	accountsClient := accounts.NewAccounts(accountsRepo)
-	paymentsClient := payments.NewPayments()
+	paymentsClient := payments.NewPayments(paymentsRepo)
 
 	compound := transport.NewCompoundServiceDesc(
 		accountsClient.GetDescription(),
