@@ -33,14 +33,14 @@ func (r *PaymentsRepo) List(ctx context.Context) ([]*repository.Payment, error) 
 
 func (r *PaymentsRepo) GetByID(ctx context.Context, id int64) (*repository.Payment, error) {
 	var payment repository.Payment
-	err := r.db.QueryRowContext(ctx, `
+	err := r.db.QueryRowxContext(ctx, `
 		SELECT
 			* 
 		FROM 
-			payment 
+			payment
 		WHERE 
 			id = $1
-	`, id).Scan(&payment)
+	`, id).StructScan(&payment)
 
 	if err == sql.ErrNoRows {
 		return nil, repository.ErrObjectNotFound

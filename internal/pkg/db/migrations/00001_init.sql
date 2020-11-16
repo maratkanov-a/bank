@@ -1,10 +1,8 @@
 -- +goose Up
--- TODO: more types???
 CREATE TYPE currency_type_enum AS ENUM (
   'USD', 'EUR', 'RU'
   );
 
--- TODO: more types???
 CREATE TYPE direction_type_enum AS ENUM (
   'incoming', 'outgoing'
   );

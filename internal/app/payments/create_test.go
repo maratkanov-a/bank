@@ -65,6 +65,15 @@ func TestImplementation_Create(t *testing.T) {
 				},
 				errorMessage: "incorrect currency value",
 			},
+			{
+				name: "same sender and receiver; expect error",
+				req: &payments.CreateRequest{
+					Amount:      10.11,
+					AccountFrom: 11,
+					AccountTo:   11,
+				},
+				errorMessage: "select other receiver",
+			},
 		} {
 			t.Run(tc.name, func(t *testing.T) {
 				i := Implementation{}

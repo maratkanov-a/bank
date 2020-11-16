@@ -4,18 +4,21 @@ import (
 	"context"
 	"database/sql"
 	"log"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type Tx interface {
 	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 	QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
 	QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
+	QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row
 }
 
 type TxFunc = func(context.Context, Tx) error
 
 func (db Database) WithTx(ctx context.Context, txOpt *sql.TxOptions, f TxFunc) error {
-	tx, err := db.Begin()
+	tx, err := db.Beginx()
 	if err != nil {
 		return err
 	}

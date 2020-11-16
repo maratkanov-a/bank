@@ -13,6 +13,7 @@ type DB interface {
 	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
 	QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
 	QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
+	QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row
 	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 	WithTx(ctx context.Context, txOpt *sql.TxOptions, f TxFunc) error
 }

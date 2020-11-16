@@ -41,14 +41,14 @@ func (r *AccountsRepo) ListByAvailability(ctx context.Context, isAvailable bool)
 
 func (r *AccountsRepo) GetByID(ctx context.Context, id int64) (*repository.Account, error) {
 	var account repository.Account
-	err := r.db.QueryRowContext(ctx, `
+	err := r.db.QueryRowxContext(ctx, `
 		SELECT
 			* 
 		FROM 
 			account 
 		WHERE 
 			id = $1
-	`, id).Scan(&account)
+	`, id).StructScan(&account)
 
 	if err == sql.ErrNoRows {
 		return nil, repository.ErrObjectNotFound
@@ -73,8 +73,8 @@ func (r *AccountsRepo) Create(ctx context.Context, ac *repository.Account) (int6
 		VALUES($1,$2,$3,$4,$5) 
 		RETURNING id`,
 		ac.Name,
-		ac.Currency,
 		ac.Balance,
+		ac.Currency,
 		ac.IsAvailable,
 		time.Now(),
 	).Scan(&id)
@@ -84,14 +84,15 @@ func (r *AccountsRepo) Create(ctx context.Context, ac *repository.Account) (int6
 
 func getAccountByIDLocked(ctx context.Context, db database.Tx, id int64) (*repository.Account, error) {
 	var account repository.Account
-	err := db.QueryRowContext(ctx, `
-		SELECT FOR UPDATE
+	err := db.QueryRowxContext(ctx, `
+		SELECT
 			* 
 		FROM 
 			account 
 		WHERE 
 			id = $1
-	`, id).Scan(&account)
+		FOR UPDATE
+	`, id).StructScan(&account)
 
 	if err == sql.ErrNoRows {
 		return nil, repository.ErrObjectNotFound
@@ -117,8 +118,8 @@ func updateAccountLocked(ctx context.Context, db database.Tx, ac *repository.Acc
 	`,
 		ac.ID,
 		ac.Name,
-		ac.Currency,
 		ac.Balance,
+		ac.Currency,
 		ac.IsAvailable,
 	)
 
@@ -160,7 +161,7 @@ func (r *AccountsRepo) Update(ctx context.Context, ac *repository.Account) error
 }
 
 func deleteLocked(ctx context.Context, db database.Tx, id int64) (bool, error) {
-	result, err := db.ExecContext(ctx, "DELETE FROM parts WHERE id = $1", id)
+	result, err := db.ExecContext(ctx, "DELETE FROM account WHERE id = $1", id)
 	if err != nil {
 		return false, err
 	}
