@@ -155,7 +155,7 @@ func TestPaymentsCreate(t *testing.T) {
 
 		expectedPayments := []*repository.Payment{
 			{ID: id, Amount: 11, AccountFrom: 11, AccountTo: 12, Direction: "incoming"},
-			{ID: id + 1, Amount: 11, AccountFrom: 11, AccountTo: 12, Direction: "outgoing"},
+			{ID: id + 1, Amount: 11, AccountFrom: 12, AccountTo: 11, Direction: "outgoing"},
 		}
 		for _, a := range listPayments {
 			a.CreatedAt = zeroTime

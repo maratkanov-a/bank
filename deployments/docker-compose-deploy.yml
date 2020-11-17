@@ -1,15 +1,21 @@
 version: "3"
 services:
-  test-postgres:
+  postgres:
     image: postgres:10.11
     environment:
-      POSTGRES_DB: bank_test
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
+      POSTGRES_DB: bank_encripted_db_name
+      POSTGRES_USER: encripted_user
+      POSTGRES_PASSWORD: encripted_password
     ports:
       - "6432:5432"
   bank:
     image: bank:0.0.1
+    environment:
+      BANK_DATABASE_NAME: bank_encripted_db_name
+      BANK_DATABASE_USER: encripted_user
+      BANK_DATABASE_PASSWORD: encripted_password
+      BANK_DATABASE_HOST: postgres
+      BANK_DATABASE_PORT: 5432
     depends_on:
       - postgres
     ports:
@@ -21,7 +27,7 @@ services:
   nginx:
     image: nginx:latest
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./../configs/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - bank
     ports:

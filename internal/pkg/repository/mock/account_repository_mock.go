@@ -16,8 +16,8 @@ import (
 type AccountRepositoryMock struct {
 	t minimock.Tester
 
-	funcCreate          func(ctx context.Context, a *mm_repository.Account) (i1 int64, err error)
-	inspectFuncCreate   func(ctx context.Context, a *mm_repository.Account)
+	funcCreate          func(ctx context.Context, ac *mm_repository.Account) (i1 int64, err error)
+	inspectFuncCreate   func(ctx context.Context, ac *mm_repository.Account)
 	afterCreateCounter  uint64
 	beforeCreateCounter uint64
 	CreateMock          mAccountRepositoryMockCreate
@@ -46,8 +46,8 @@ type AccountRepositoryMock struct {
 	beforeListByAvailabilityCounter uint64
 	ListByAvailabilityMock          mAccountRepositoryMockListByAvailability
 
-	funcUpdate          func(ctx context.Context, a *mm_repository.Account) (err error)
-	inspectFuncUpdate   func(ctx context.Context, a *mm_repository.Account)
+	funcUpdate          func(ctx context.Context, ac *mm_repository.Account) (err error)
+	inspectFuncUpdate   func(ctx context.Context, ac *mm_repository.Account)
 	afterUpdateCounter  uint64
 	beforeUpdateCounter uint64
 	UpdateMock          mAccountRepositoryMockUpdate
@@ -101,7 +101,7 @@ type AccountRepositoryMockCreateExpectation struct {
 // AccountRepositoryMockCreateParams contains parameters of the AccountRepository.Create
 type AccountRepositoryMockCreateParams struct {
 	ctx context.Context
-	a   *mm_repository.Account
+	ac  *mm_repository.Account
 }
 
 // AccountRepositoryMockCreateResults contains results of the AccountRepository.Create
@@ -111,7 +111,7 @@ type AccountRepositoryMockCreateResults struct {
 }
 
 // Expect sets up expected params for AccountRepository.Create
-func (mmCreate *mAccountRepositoryMockCreate) Expect(ctx context.Context, a *mm_repository.Account) *mAccountRepositoryMockCreate {
+func (mmCreate *mAccountRepositoryMockCreate) Expect(ctx context.Context, ac *mm_repository.Account) *mAccountRepositoryMockCreate {
 	if mmCreate.mock.funcCreate != nil {
 		mmCreate.mock.t.Fatalf("AccountRepositoryMock.Create mock is already set by Set")
 	}
@@ -120,7 +120,7 @@ func (mmCreate *mAccountRepositoryMockCreate) Expect(ctx context.Context, a *mm_
 		mmCreate.defaultExpectation = &AccountRepositoryMockCreateExpectation{}
 	}
 
-	mmCreate.defaultExpectation.params = &AccountRepositoryMockCreateParams{ctx, a}
+	mmCreate.defaultExpectation.params = &AccountRepositoryMockCreateParams{ctx, ac}
 	for _, e := range mmCreate.expectations {
 		if minimock.Equal(e.params, mmCreate.defaultExpectation.params) {
 			mmCreate.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmCreate.defaultExpectation.params)
@@ -131,7 +131,7 @@ func (mmCreate *mAccountRepositoryMockCreate) Expect(ctx context.Context, a *mm_
 }
 
 // Inspect accepts an inspector function that has same arguments as the AccountRepository.Create
-func (mmCreate *mAccountRepositoryMockCreate) Inspect(f func(ctx context.Context, a *mm_repository.Account)) *mAccountRepositoryMockCreate {
+func (mmCreate *mAccountRepositoryMockCreate) Inspect(f func(ctx context.Context, ac *mm_repository.Account)) *mAccountRepositoryMockCreate {
 	if mmCreate.mock.inspectFuncCreate != nil {
 		mmCreate.mock.t.Fatalf("Inspect function is already set for AccountRepositoryMock.Create")
 	}
@@ -155,7 +155,7 @@ func (mmCreate *mAccountRepositoryMockCreate) Return(i1 int64, err error) *Accou
 }
 
 //Set uses given function f to mock the AccountRepository.Create method
-func (mmCreate *mAccountRepositoryMockCreate) Set(f func(ctx context.Context, a *mm_repository.Account) (i1 int64, err error)) *AccountRepositoryMock {
+func (mmCreate *mAccountRepositoryMockCreate) Set(f func(ctx context.Context, ac *mm_repository.Account) (i1 int64, err error)) *AccountRepositoryMock {
 	if mmCreate.defaultExpectation != nil {
 		mmCreate.mock.t.Fatalf("Default expectation is already set for the AccountRepository.Create method")
 	}
@@ -170,14 +170,14 @@ func (mmCreate *mAccountRepositoryMockCreate) Set(f func(ctx context.Context, a 
 
 // When sets expectation for the AccountRepository.Create which will trigger the result defined by the following
 // Then helper
-func (mmCreate *mAccountRepositoryMockCreate) When(ctx context.Context, a *mm_repository.Account) *AccountRepositoryMockCreateExpectation {
+func (mmCreate *mAccountRepositoryMockCreate) When(ctx context.Context, ac *mm_repository.Account) *AccountRepositoryMockCreateExpectation {
 	if mmCreate.mock.funcCreate != nil {
 		mmCreate.mock.t.Fatalf("AccountRepositoryMock.Create mock is already set by Set")
 	}
 
 	expectation := &AccountRepositoryMockCreateExpectation{
 		mock:   mmCreate.mock,
-		params: &AccountRepositoryMockCreateParams{ctx, a},
+		params: &AccountRepositoryMockCreateParams{ctx, ac},
 	}
 	mmCreate.expectations = append(mmCreate.expectations, expectation)
 	return expectation
@@ -190,15 +190,15 @@ func (e *AccountRepositoryMockCreateExpectation) Then(i1 int64, err error) *Acco
 }
 
 // Create implements repository.AccountRepository
-func (mmCreate *AccountRepositoryMock) Create(ctx context.Context, a *mm_repository.Account) (i1 int64, err error) {
+func (mmCreate *AccountRepositoryMock) Create(ctx context.Context, ac *mm_repository.Account) (i1 int64, err error) {
 	mm_atomic.AddUint64(&mmCreate.beforeCreateCounter, 1)
 	defer mm_atomic.AddUint64(&mmCreate.afterCreateCounter, 1)
 
 	if mmCreate.inspectFuncCreate != nil {
-		mmCreate.inspectFuncCreate(ctx, a)
+		mmCreate.inspectFuncCreate(ctx, ac)
 	}
 
-	mm_params := &AccountRepositoryMockCreateParams{ctx, a}
+	mm_params := &AccountRepositoryMockCreateParams{ctx, ac}
 
 	// Record call args
 	mmCreate.CreateMock.mutex.Lock()
@@ -215,7 +215,7 @@ func (mmCreate *AccountRepositoryMock) Create(ctx context.Context, a *mm_reposit
 	if mmCreate.CreateMock.defaultExpectation != nil {
 		mm_atomic.AddUint64(&mmCreate.CreateMock.defaultExpectation.Counter, 1)
 		mm_want := mmCreate.CreateMock.defaultExpectation.params
-		mm_got := AccountRepositoryMockCreateParams{ctx, a}
+		mm_got := AccountRepositoryMockCreateParams{ctx, ac}
 		if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
 			mmCreate.t.Errorf("AccountRepositoryMock.Create got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
 		}
@@ -227,9 +227,9 @@ func (mmCreate *AccountRepositoryMock) Create(ctx context.Context, a *mm_reposit
 		return (*mm_results).i1, (*mm_results).err
 	}
 	if mmCreate.funcCreate != nil {
-		return mmCreate.funcCreate(ctx, a)
+		return mmCreate.funcCreate(ctx, ac)
 	}
-	mmCreate.t.Fatalf("Unexpected call to AccountRepositoryMock.Create. %v %v", ctx, a)
+	mmCreate.t.Fatalf("Unexpected call to AccountRepositoryMock.Create. %v %v", ctx, ac)
 	return
 }
 
@@ -1184,7 +1184,7 @@ type AccountRepositoryMockUpdateExpectation struct {
 // AccountRepositoryMockUpdateParams contains parameters of the AccountRepository.Update
 type AccountRepositoryMockUpdateParams struct {
 	ctx context.Context
-	a   *mm_repository.Account
+	ac  *mm_repository.Account
 }
 
 // AccountRepositoryMockUpdateResults contains results of the AccountRepository.Update
@@ -1193,7 +1193,7 @@ type AccountRepositoryMockUpdateResults struct {
 }
 
 // Expect sets up expected params for AccountRepository.Update
-func (mmUpdate *mAccountRepositoryMockUpdate) Expect(ctx context.Context, a *mm_repository.Account) *mAccountRepositoryMockUpdate {
+func (mmUpdate *mAccountRepositoryMockUpdate) Expect(ctx context.Context, ac *mm_repository.Account) *mAccountRepositoryMockUpdate {
 	if mmUpdate.mock.funcUpdate != nil {
 		mmUpdate.mock.t.Fatalf("AccountRepositoryMock.Update mock is already set by Set")
 	}
@@ -1202,7 +1202,7 @@ func (mmUpdate *mAccountRepositoryMockUpdate) Expect(ctx context.Context, a *mm_
 		mmUpdate.defaultExpectation = &AccountRepositoryMockUpdateExpectation{}
 	}
 
-	mmUpdate.defaultExpectation.params = &AccountRepositoryMockUpdateParams{ctx, a}
+	mmUpdate.defaultExpectation.params = &AccountRepositoryMockUpdateParams{ctx, ac}
 	for _, e := range mmUpdate.expectations {
 		if minimock.Equal(e.params, mmUpdate.defaultExpectation.params) {
 			mmUpdate.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmUpdate.defaultExpectation.params)
@@ -1213,7 +1213,7 @@ func (mmUpdate *mAccountRepositoryMockUpdate) Expect(ctx context.Context, a *mm_
 }
 
 // Inspect accepts an inspector function that has same arguments as the AccountRepository.Update
-func (mmUpdate *mAccountRepositoryMockUpdate) Inspect(f func(ctx context.Context, a *mm_repository.Account)) *mAccountRepositoryMockUpdate {
+func (mmUpdate *mAccountRepositoryMockUpdate) Inspect(f func(ctx context.Context, ac *mm_repository.Account)) *mAccountRepositoryMockUpdate {
 	if mmUpdate.mock.inspectFuncUpdate != nil {
 		mmUpdate.mock.t.Fatalf("Inspect function is already set for AccountRepositoryMock.Update")
 	}
@@ -1237,7 +1237,7 @@ func (mmUpdate *mAccountRepositoryMockUpdate) Return(err error) *AccountReposito
 }
 
 //Set uses given function f to mock the AccountRepository.Update method
-func (mmUpdate *mAccountRepositoryMockUpdate) Set(f func(ctx context.Context, a *mm_repository.Account) (err error)) *AccountRepositoryMock {
+func (mmUpdate *mAccountRepositoryMockUpdate) Set(f func(ctx context.Context, ac *mm_repository.Account) (err error)) *AccountRepositoryMock {
 	if mmUpdate.defaultExpectation != nil {
 		mmUpdate.mock.t.Fatalf("Default expectation is already set for the AccountRepository.Update method")
 	}
@@ -1252,14 +1252,14 @@ func (mmUpdate *mAccountRepositoryMockUpdate) Set(f func(ctx context.Context, a 
 
 // When sets expectation for the AccountRepository.Update which will trigger the result defined by the following
 // Then helper
-func (mmUpdate *mAccountRepositoryMockUpdate) When(ctx context.Context, a *mm_repository.Account) *AccountRepositoryMockUpdateExpectation {
+func (mmUpdate *mAccountRepositoryMockUpdate) When(ctx context.Context, ac *mm_repository.Account) *AccountRepositoryMockUpdateExpectation {
 	if mmUpdate.mock.funcUpdate != nil {
 		mmUpdate.mock.t.Fatalf("AccountRepositoryMock.Update mock is already set by Set")
 	}
 
 	expectation := &AccountRepositoryMockUpdateExpectation{
 		mock:   mmUpdate.mock,
-		params: &AccountRepositoryMockUpdateParams{ctx, a},
+		params: &AccountRepositoryMockUpdateParams{ctx, ac},
 	}
 	mmUpdate.expectations = append(mmUpdate.expectations, expectation)
 	return expectation
@@ -1272,15 +1272,15 @@ func (e *AccountRepositoryMockUpdateExpectation) Then(err error) *AccountReposit
 }
 
 // Update implements repository.AccountRepository
-func (mmUpdate *AccountRepositoryMock) Update(ctx context.Context, a *mm_repository.Account) (err error) {
+func (mmUpdate *AccountRepositoryMock) Update(ctx context.Context, ac *mm_repository.Account) (err error) {
 	mm_atomic.AddUint64(&mmUpdate.beforeUpdateCounter, 1)
 	defer mm_atomic.AddUint64(&mmUpdate.afterUpdateCounter, 1)
 
 	if mmUpdate.inspectFuncUpdate != nil {
-		mmUpdate.inspectFuncUpdate(ctx, a)
+		mmUpdate.inspectFuncUpdate(ctx, ac)
 	}
 
-	mm_params := &AccountRepositoryMockUpdateParams{ctx, a}
+	mm_params := &AccountRepositoryMockUpdateParams{ctx, ac}
 
 	// Record call args
 	mmUpdate.UpdateMock.mutex.Lock()
@@ -1297,7 +1297,7 @@ func (mmUpdate *AccountRepositoryMock) Update(ctx context.Context, a *mm_reposit
 	if mmUpdate.UpdateMock.defaultExpectation != nil {
 		mm_atomic.AddUint64(&mmUpdate.UpdateMock.defaultExpectation.Counter, 1)
 		mm_want := mmUpdate.UpdateMock.defaultExpectation.params
-		mm_got := AccountRepositoryMockUpdateParams{ctx, a}
+		mm_got := AccountRepositoryMockUpdateParams{ctx, ac}
 		if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
 			mmUpdate.t.Errorf("AccountRepositoryMock.Update got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
 		}
@@ -1309,9 +1309,9 @@ func (mmUpdate *AccountRepositoryMock) Update(ctx context.Context, a *mm_reposit
 		return (*mm_results).err
 	}
 	if mmUpdate.funcUpdate != nil {
-		return mmUpdate.funcUpdate(ctx, a)
+		return mmUpdate.funcUpdate(ctx, ac)
 	}
-	mmUpdate.t.Fatalf("Unexpected call to AccountRepositoryMock.Update. %v %v", ctx, a)
+	mmUpdate.t.Fatalf("Unexpected call to AccountRepositoryMock.Update. %v %v", ctx, ac)
 	return
 }
 

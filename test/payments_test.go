@@ -145,7 +145,7 @@ func TestPaymentsCreate(t *testing.T) {
 
 		expectedPayments := []*payments.Payment{
 			{ID: resp.ID, Amount: 11, AccountFrom: 11, AccountTo: 12, Direction: payments.DirectionType_incoming},
-			{ID: resp.ID + 1, Amount: 11, AccountFrom: 11, AccountTo: 12, Direction: payments.DirectionType_outgoing},
+			{ID: resp.ID + 1, Amount: 11, AccountFrom: 12, AccountTo: 11, Direction: payments.DirectionType_outgoing},
 		}
 		assert.Equal(t, expectedPayments, list.Payments)
 

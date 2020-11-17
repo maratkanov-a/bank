@@ -110,8 +110,8 @@ func (r *PaymentsRepo) Create(ctx context.Context, from, to int64, amount int64)
 		// create from
 		_, err = createPayment(ctx, tx, &repository.Payment{
 			Amount:      amount,
-			AccountFrom: accountFrom.ID,
-			AccountTo:   accountTo.ID,
+			AccountFrom: accountTo.ID,
+			AccountTo:   accountFrom.ID,
 			Direction:   direction.Outgoing,
 		})
 		if err != nil {

@@ -10,8 +10,8 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lib/pq v1.8.0
-	github.com/maratkanov-a/bank/pkg/accounts v0.0.0-00010101000000-000000000000
-	github.com/maratkanov-a/bank/pkg/payments v0.0.0-00010101000000-000000000000
+	github.com/maratkanov-a/bank/pkg/accounts v0.0.1
+	github.com/maratkanov-a/bank/pkg/payments v0.0.1
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
