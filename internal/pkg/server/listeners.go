@@ -137,6 +137,7 @@ func Run(gs *grpc.Server, hmux *chi.Mux, l *Listeners) error {
 }
 
 func RunAll(compound *transport.CompoundServiceDesc, cfg *config.Env) error {
+	// static to work with swagger
 	staticFS, err := fs.New()
 	if err != nil {
 		return err

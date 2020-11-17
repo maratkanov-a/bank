@@ -12,6 +12,7 @@ const (
 
 var ErrorUnknownDirection = errors.New("unknown direction")
 
+// ConvertCurrencyToProto converts db string to proto type
 func ConvertCurrencyToProto(c string) (payments.DirectionType, error) {
 	switch c {
 	case Incoming:
