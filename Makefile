@@ -40,8 +40,8 @@ ifeq ($(wildcard $(MINIMOCK_BIN)),)
 MINIMOCK_BIN:=$(LOCAL_BIN)/minimock
 endif
 
-.PHONY: .install-validate
-.install-validate:
+.PHONY: install-validate
+install-validate:
 	$(info #Downloading protoc-gen-validate v$(GENVALIDATE_TAG))
 	tmp=$$(mktemp -d) && cd $$tmp && pwd && go mod init temp && go get -d github.com/envoyproxy/protoc-gen-validate@v$(GENVALIDATE_TAG) && \
 		go build -o $(LOCAL_BIN)/protoc-gen-validate github.com/envoyproxy/protoc-gen-validate && \
@@ -64,11 +64,10 @@ install-goose:
 		go build -o $(LOCAL_BIN)/goose github.com/pressly/goose && \
 		rm -rf $$tmp
 
-.PHONY: generate-mock
-generate-mock: install-minimock
-	find . -name '*_mock.go' -delete
-	$(BUILD_ENVPARMS) $(MINIMOCK_BIN) -g -i "$(INTERNAL_PKG_PATH)/repository.*" -o "$(INTERNAL_PKG_PATH)/repository/mock/" -s "_mock.go"
-
+.PHONY: install-gendoc
+install-gendoc:
+	$(info #Downloading protoc-gen-doc)
+	go get -u github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc
 
 REL_PATH_FROM_ACCOUNTS_TO_ROOT=$(shell echo $(ACCOUNTS_CLIENT_PATH) | perl -F/ -lane 'print "../"x scalar(@F)')
 REL_PATH_FROM_PAYMENTS_TO_ROOT=$(shell echo $(PAYMENTS_CLIENT_PATH) | perl -F/ -lane 'print "../"x scalar(@F)')
@@ -97,15 +96,25 @@ REL_PATH_FROM_PAYMENTS_TO_ROOT=$(shell echo $(PAYMENTS_CLIENT_PATH) | perl -F/ -
 .PHONY: generate
 generate: .generate .generate-validation
 
+.PHONY: generate-mock
+generate-mock: install-minimock
+	find . -name '*_mock.go' -delete
+	$(MINIMOCK_BIN) -g -i "$(INTERNAL_PKG_PATH)/repository.*" -o "$(INTERNAL_PKG_PATH)/repository/mock/" -s "_mock.go"
+
+.PHONY: generate-docs
+generate-docs:
+	protoc -I $(PROTO_FILES_PATH):./vendor.pb --doc_out=./docs \
+	--doc_opt=markdown,api.md $(PROTO_FILES_PATH)/*.proto
+
 .PHONY: build
 build:
 	$(info #Building...)
-	go build -o $(LOCAL_BIN) ./cmd/bank
+	GOOS=linux GOARCH=amd64 go build -o $(LOCAL_BIN) ./cmd/bank
 
 .PHONY: lint
 lint: install-lint
 	$(info #Running lint...)
-	$(GOLANGCI_BIN) run --new-from-rev=origin/master --config=.golangci.pipeline.yaml ./...
+	$(GOLANGCI_BIN) run --new-from-rev=origin/master --config=.lint.yaml ./...
 
 .PHONY: test
 test:
@@ -148,3 +157,12 @@ compose-rm:
 .PHONY: compose-down
 compose-down:
 	docker-compose -p bank -f ./deployments/docker-compose.yml stop
+
+.PHONY: run
+run:
+	go run ./cmd/bank/main.go
+
+.PHONY: create-image
+create-image: build
+	docker build --tag bank:$(version) --file ./build/ci/Dockerfile .
+

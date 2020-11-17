@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/golang/glog"
 	"github.com/maratkanov-a/bank/internal/app/accounts"
 	"github.com/maratkanov-a/bank/internal/app/payments"
 	"github.com/maratkanov-a/bank/internal/pkg/config"
@@ -11,15 +10,16 @@ import (
 	"github.com/sirupsen/logrus"
 	_ "github.com/utrack/clay/doc/example/static/statik"
 	"github.com/utrack/clay/v2/transport"
-	"log"
 )
 
 func run() error {
+	// getting data from
 	cfg, err := config.GetEnv()
 	if err != nil {
 		logrus.Fatalf("can't get environments: %v", err)
 	}
 
+	// init connection to db
 	db, err := database.NewDB(database.Options{
 		User:            cfg.DatabaseUser,
 		Password:        cfg.DatabasePassword,
@@ -31,15 +31,18 @@ func run() error {
 		ConnMaxLifetime: cfg.DatabaseConnMaxLifetime,
 	})
 	if err != nil {
-		log.Fatalf("can't connect to database: %v", err)
+		logrus.Fatalf("can't connect to database: %v", err)
 	}
 
+	// init db wrappers
 	accountsRepo := postgresql.NewAccounts(db)
 	paymentsRepo := postgresql.NewPayments(db)
 
+	// init services objects
 	accountsClient := accounts.NewAccounts(accountsRepo)
 	paymentsClient := payments.NewPayments(paymentsRepo)
 
+	// combine services
 	compound := transport.NewCompoundServiceDesc(
 		accountsClient.GetDescription(),
 		paymentsClient.GetDescription(),
@@ -50,6 +53,6 @@ func run() error {
 
 func main() {
 	if err := run(); err != nil {
-		glog.Fatal(err)
+		logrus.Fatal(err)
 	}
 }

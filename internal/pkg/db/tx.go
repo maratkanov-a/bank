@@ -3,9 +3,9 @@ package database
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 type Tx interface {
@@ -31,7 +31,7 @@ func (db Database) WithTx(ctx context.Context, txOpt *sql.TxOptions, f TxFunc) e
 
 	rbErr := tx.Rollback()
 	if rbErr != nil {
-		log.Fatal(rbErr)
+		logrus.Fatal(rbErr)
 	}
 
 	return err
