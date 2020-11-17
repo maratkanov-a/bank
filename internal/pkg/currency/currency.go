@@ -13,6 +13,7 @@ const (
 
 var ErrorUnknownCurrency = errors.New("unknown currency")
 
+// ConvertCurrencyToProto convert db string to proto type
 func ConvertCurrencyToProto(c string) (accounts.CurrencyType, error) {
 	switch c {
 	case USD:
@@ -26,6 +27,7 @@ func ConvertCurrencyToProto(c string) (accounts.CurrencyType, error) {
 	return -1, ErrorUnknownCurrency
 }
 
+// ConvertCurrencyToRepository convert proto type to db string
 func ConvertCurrencyToRepository(c accounts.CurrencyType) (string, error) {
 	switch c {
 	case accounts.CurrencyType_USD:

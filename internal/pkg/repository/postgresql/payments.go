@@ -75,6 +75,54 @@ func createPayment(ctx context.Context, db database.Tx, p *repository.Payment) (
 
 }
 
+func createPayments(ctx context.Context, db database.Tx, toID, fromID, amount int64) (int64, error) {
+	// create to
+	id, err := createPayment(ctx, db, &repository.Payment{
+		Amount:      amount,
+		AccountFrom: fromID,
+		AccountTo:   toID,
+		Direction:   direction.Incoming,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	// create from
+	_, err = createPayment(ctx, db, &repository.Payment{
+		Amount:      amount,
+		AccountFrom: toID,
+		AccountTo:   fromID,
+		Direction:   direction.Outgoing,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
+func updateBalances(ctx context.Context, db database.Tx, at, af *repository.Account, amount int64) error {
+	ok, err := updateLockedBalance(ctx, db, at.ID, at.Balance+amount)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		return repository.ErrObjectNotFound
+	}
+
+	ok, err = updateLockedBalance(ctx, db, af.ID, af.Balance-amount)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		return repository.ErrObjectNotFound
+	}
+
+	return nil
+}
+
 func (r *PaymentsRepo) Create(ctx context.Context, from, to int64, amount int64) (int64, error) {
 	var id int64
 	err := r.db.WithTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable}, func(ctx context.Context, tx database.Tx) error {
@@ -96,49 +144,12 @@ func (r *PaymentsRepo) Create(ctx context.Context, from, to int64, amount int64)
 			return repository.ErrIncompatibleCurrency
 		}
 
-		// create to
-		id, err = createPayment(ctx, tx, &repository.Payment{
-			Amount:      amount,
-			AccountFrom: accountFrom.ID,
-			AccountTo:   accountTo.ID,
-			Direction:   direction.Incoming,
-		})
+		id, err = createPayments(ctx, tx, accountTo.ID, accountFrom.ID, amount)
 		if err != nil {
 			return err
 		}
 
-		// create from
-		_, err = createPayment(ctx, tx, &repository.Payment{
-			Amount:      amount,
-			AccountFrom: accountTo.ID,
-			AccountTo:   accountFrom.ID,
-			Direction:   direction.Outgoing,
-		})
-		if err != nil {
-			return err
-		}
-
-		accountTo.Balance = accountTo.Balance + amount
-		ok, err := updateAccountLocked(ctx, tx, accountTo)
-		if err != nil {
-			return err
-		}
-
-		if !ok {
-			return repository.ErrObjectNotFound
-		}
-
-		accountFrom.Balance = accountFrom.Balance - amount
-		ok, err = updateAccountLocked(ctx, tx, accountFrom)
-		if err != nil {
-			return err
-		}
-
-		if !ok {
-			return repository.ErrObjectNotFound
-		}
-
-		return nil
+		return updateBalances(ctx, tx, accountTo, accountFrom, amount)
 	})
 
 	if err != nil {

@@ -134,6 +134,30 @@ func updateAccountLocked(ctx context.Context, db database.Tx, ac *repository.Acc
 	return rowsAffected > 0, nil
 }
 
+func updateLockedBalance(ctx context.Context, db database.Tx, id, updatedBalance int64) (bool, error) {
+	result, err := db.ExecContext(ctx, `
+		UPDATE
+			account
+		SET
+			balance=$2
+		WHERE
+			id=$1
+	`,
+		id,
+		updatedBalance,
+	)
+
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	return rowsAffected > 0, nil
+}
+
 func (r *AccountsRepo) Update(ctx context.Context, ac *repository.Account) error {
 	err := r.db.WithTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable}, func(ctx context.Context, tx database.Tx) error {
 		_, err := getAccountByIDLocked(ctx, tx, ac.ID)

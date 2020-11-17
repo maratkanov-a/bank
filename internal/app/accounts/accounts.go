@@ -26,6 +26,7 @@ func (i *Implementation) GetDescription() transport.ServiceDesc {
 	return desc.NewAccountsServiceDesc(i)
 }
 
+// convertToProtos converts slice from repos to proto with skipping incorrect ones
 func convertToProtos(acs []*repository.Account) []*desc.Account {
 	var converted = make([]*desc.Account, 0, len(acs))
 	for _, ac := range acs {
@@ -41,6 +42,7 @@ func convertToProtos(acs []*repository.Account) []*desc.Account {
 	return converted
 }
 
+// convertToProto converts one repo object to proto
 func convertToProto(ac *repository.Account) (*desc.Account, error) {
 	c, err := currency.ConvertCurrencyToProto(ac.Currency)
 	if err != nil {

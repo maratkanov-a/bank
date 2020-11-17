@@ -30,8 +30,3 @@ func GetEnv() (*Env, error) {
 
 	return &config, err
 }
-
-// GetEnvironmentValues simply returns receiver
-func (c *Env) GetEnvironmentValues() *Env {
-	return c
-}

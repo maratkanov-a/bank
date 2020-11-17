@@ -9,6 +9,7 @@ import (
 
 var ErrorIncorrectValue = errors.New("incorrect currency value")
 
+// ConvertToCents converts user friendly float to int64
 func ConvertToCents(v float64) (int64, error) {
 	d := decimal.NewFromFloat(v)
 	a := d.Exponent()
@@ -19,6 +20,7 @@ func ConvertToCents(v float64) (int64, error) {
 	return int64(v * 100), nil
 }
 
+// ConvertToCents converts db int64 to friendly float
 func ConvertFromCents(v int64) (float64, error) {
 	if v < 0 {
 		return 0, ErrorIncorrectValue

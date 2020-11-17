@@ -29,6 +29,7 @@ func (i *Implementation) GetDescription() transport.ServiceDesc {
 	return desc.NewPaymentsServiceDesc(i)
 }
 
+// convertToProto converts one repo object to proto
 func convertToProto(p *repository.Payment) (*desc.Payment, error) {
 	a, err := balance.ConvertFromCents(p.Amount)
 	if err != nil {
@@ -46,6 +47,7 @@ func convertToProto(p *repository.Payment) (*desc.Payment, error) {
 	}, nil
 }
 
+// convertToProtos converts slice from repos to proto with skipping incorrect ones
 func convertToProtos(ps []*repository.Payment) []*desc.Payment {
 	var converted = make([]*desc.Payment, 0, len(ps))
 	for _, p := range ps {

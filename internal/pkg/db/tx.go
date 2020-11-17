@@ -15,8 +15,10 @@ type Tx interface {
 	QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row
 }
 
+// TxFunc is set of logic to put at transaction
 type TxFunc = func(context.Context, Tx) error
 
+// WithTx works with transaction layer to commit or rollback transaction
 func (db Database) WithTx(ctx context.Context, txOpt *sql.TxOptions, f TxFunc) error {
 	tx, err := db.Beginx()
 	if err != nil {
