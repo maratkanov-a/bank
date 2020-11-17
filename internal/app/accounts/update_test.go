@@ -26,6 +26,7 @@ func TestImplementation_Update(t *testing.T) {
 			IsAvailable: true,
 		}
 		expectAccountRepo = &repository.Account{
+			ID:          1192,
 			Name:        "someName",
 			Balance:     10011,
 			Currency:    "RU",

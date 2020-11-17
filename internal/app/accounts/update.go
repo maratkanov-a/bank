@@ -30,6 +30,7 @@ func (i *Implementation) Update(ctx context.Context, req *desc.UpdateRequest) (*
 	}
 
 	acc := &repository.Account{
+		ID:          req.ID,
 		Name:        req.Name,
 		Balance:     bal,
 		Currency:    curr,

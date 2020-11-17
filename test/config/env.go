@@ -10,7 +10,7 @@ const envPrefix = "TEST_BANK"
 
 // Config contains configuration for clients in integration tests
 type Config struct {
-	AppAddress              string        `split_words:"true" default:"localhost:8843"`
+	AppAddress              string        `split_words:"true" default:"localhost:8443"`
 	DatabaseUser            string        `envconfig:"DATABASE_USER" default:"test"`
 	DatabasePassword        string        `envconfig:"DATABASE_PASSWORD" default:"test"`
 	DatabaseDBName          string        `envconfig:"DATABASE_NAME" default:"bank_test"`

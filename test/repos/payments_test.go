@@ -1,10 +1,10 @@
 package repos
 
 import (
-	"github.com/maratkanov-a/bank/internal/pkg/repository"
 	"sync"
 	"testing"
 
+	"github.com/maratkanov-a/bank/internal/pkg/repository"
 	"github.com/maratkanov-a/bank/internal/pkg/repository/postgresql"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

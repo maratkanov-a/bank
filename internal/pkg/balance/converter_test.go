@@ -92,6 +92,21 @@ func Test_ConvertFromCents(t *testing.T) {
 			val:      1111,
 			expected: 11.11,
 		},
+		{
+			name:     "102 to 1.02",
+			val:      102,
+			expected: 1.02,
+		},
+		{
+			name:     "2 to 0.02",
+			val:      2,
+			expected: 0.02,
+		},
+		{
+			name:     "0 to 0",
+			val:      0,
+			expected: 0,
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			actual, err := ConvertFromCents(tc.val)

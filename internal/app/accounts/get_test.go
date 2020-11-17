@@ -87,7 +87,7 @@ func TestImplementation_Get(t *testing.T) {
 		require.Error(t, err)
 		require.Nil(t, resp)
 
-		assert.Contains(t, err.Error(), "can't convert 0.-1 to decimal")
+		assert.Contains(t, err.Error(), "incorrect currency value")
 	})
 
 	t.Run("expect ok", func(t *testing.T) {

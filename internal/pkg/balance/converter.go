@@ -2,7 +2,8 @@ package balance
 
 import (
 	"errors"
-	"fmt"
+	"strconv"
+
 	"github.com/shopspring/decimal"
 )
 
@@ -19,7 +20,25 @@ func ConvertToCents(v float64) (int64, error) {
 }
 
 func ConvertFromCents(v int64) (float64, error) {
-	d, err := decimal.NewFromString(fmt.Sprintf("%d.%d", v/100, v%100))
+	if v < 0 {
+		return 0, ErrorIncorrectValue
+	}
+
+	var (
+		digitPart       = v / 100
+		stringDigitPart = strconv.FormatInt(digitPart, 10)
+		strAmount       = strconv.FormatInt(v, 10)
+	)
+
+	if digitPart == 0 {
+		stringDigitPart = ""
+	}
+
+	if len(strAmount) < 2 {
+		strAmount = "0" + strAmount
+	}
+
+	d, err := decimal.NewFromString(stringDigitPart + "." + strAmount[len(stringDigitPart):])
 	if err != nil {
 		return 0, err
 	}
