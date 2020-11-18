@@ -109,7 +109,7 @@ generate-docs:
 .PHONY: build
 build:
 	$(info #Building...)
-	GOOS=linux GOARCH=amd64 go build -o $(LOCAL_BIN) ./cmd/bank
+	GOOS=linux GOARCH=amd64 go build -o $(LOCAL_BIN)/bank ./cmd/bank
 
 .PHONY: lint
 lint: install-lint
