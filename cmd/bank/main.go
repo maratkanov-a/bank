@@ -1,6 +1,8 @@
 package main
 
 import (
+	"runtime"
+
 	"github.com/maratkanov-a/bank/internal/app/accounts"
 	"github.com/maratkanov-a/bank/internal/app/payments"
 	"github.com/maratkanov-a/bank/internal/pkg/config"
@@ -13,6 +15,8 @@ import (
 )
 
 func run() error {
+	runtime.GOMAXPROCS(runtime.NumCPU() * 2)
+
 	// getting data from
 	cfg, err := config.GetEnv()
 	if err != nil {
