@@ -63,7 +63,6 @@ func newListeners(opts optionsListener) (*Listeners, error) {
 }
 
 func newDebugHTTPMux(mux chi.Router) http.Handler {
-	//mux.Handle("/metrics")
 	mux.Mount("/debug", chimiddleware.Profiler())
 	return mux
 }
@@ -114,8 +113,6 @@ func Run(gs *grpc.Server, hmux *chi.Mux, l *Listeners) error {
 	case <-stop:
 		break
 	}
-
-	// INT caught, stop gracefully
 
 	logrus.Info("caught SIGINT, shutting down...")
 	// in 10s

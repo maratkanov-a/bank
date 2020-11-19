@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/go-chi/chi v3.3.4+incompatible
-	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/gogo/protobuf v1.3.1
 	github.com/gojuno/minimock/v3 v3.0.8
 	github.com/jmoiron/sqlx v1.2.0
@@ -12,7 +11,6 @@ require (
 	github.com/lib/pq v1.8.0
 	github.com/maratkanov-a/bank/pkg/accounts v0.0.1
 	github.com/maratkanov-a/bank/pkg/payments v0.0.1
-	github.com/mattn/go-sqlite3 v1.10.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/shopspring/decimal v1.2.0
